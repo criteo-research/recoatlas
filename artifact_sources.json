@@ -1,0 +1,228 @@
+{
+  "schema_version": 1,
+  "query_encoder": {
+    "repo_id": "Qwen/Qwen3-Embedding-0.6B",
+    "revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3"
+  },
+  "sources": {
+    "amazon-data": {
+      "repo_type": "dataset",
+      "repo_id": "iaouali/amazon-benchmark",
+      "revision": "a712ed01d3d01905d98251bfcb97af5a1320c58a"
+    },
+    "hm-data": {
+      "repo_type": "dataset",
+      "repo_id": "iaouali/hm-benchmark",
+      "revision": "72f567a005a17822eed9e16709e36054df4ee01b"
+    },
+    "amazon-tools": {
+      "repo_type": "model",
+      "repo_id": "iaouali/amazon-tools",
+      "revision": "1510aab8c62c329e6670e659230429abb496afb4"
+    },
+    "hm-tools": {
+      "repo_type": "model",
+      "repo_id": "iaouali/hm-tools",
+      "revision": "56e8a4a53df668d0d332c184665016d448362a3f"
+    }
+  },
+  "categories": {
+    "amazon-musical-instruments": {
+      "catalog_items": 62961,
+      "query_counts": {
+        "shared_train": 8937,
+        "agent_dev": 2028,
+        "agent_hidden": 1960
+      },
+      "files": {
+        "data/product_texts.json": {
+          "source": "amazon-tools",
+          "path": "Musical_Instruments/data/product_texts.json",
+          "size": 29216932,
+          "sha256": "e875e343c29996c8b1d1120d033ad77fbfaca76d7cf2a6023573c90c2275c2fe"
+        },
+        "data/subcategories.json": {
+          "source": "amazon-tools",
+          "path": "Musical_Instruments/data/subcategories.json",
+          "size": 2805895,
+          "git_blob_sha1": "20fbe5ac5639fea3bb146883c272049c20bdc1e2"
+        },
+        "embeddings/item_embeddings_qwen.pt": {
+          "source": "amazon-tools",
+          "path": "Musical_Instruments/embeddings/item_embeddings_qwen.pt",
+          "size": 259148886,
+          "sha256": "f46aed409e66b59d8ddfdde2eaeb4cf276a7e6e71c7329033599d1f375241c97"
+        },
+        "embeddings/comp_embeddings_qwen.pt": {
+          "source": "amazon-tools",
+          "path": "Musical_Instruments/runs/shared-train-best-recipes-v1/embeddings/comp_embeddings_qwen.pt",
+          "size": 130206013,
+          "sha256": "848ec9f284ad9bfb0c236cfec90e1104e7b5e0c0e80a1b96b74ef315dfdba3eb"
+        },
+        "models/recsys_model_qwen.pt": {
+          "source": "amazon-tools",
+          "path": "Musical_Instruments/runs/shared-train-best-recipes-v1/models/recsys_model_qwen.pt",
+          "size": 242751975,
+          "sha256": "bce56bdce6684796832f1f0c20cf7b2acea2c1a6b7264798b704ff300d84c203"
+        },
+        "queries/shared_train.jsonl": {
+          "source": "amazon-data",
+          "path": "Musical_Instruments/shared_train.jsonl",
+          "size": 3881412,
+          "git_blob_sha1": "eecc8ccba30bc6f94df93227e39eaba4578bf126"
+        },
+        "queries/agent_dev.jsonl": {
+          "source": "amazon-data",
+          "path": "Musical_Instruments/agent_dev.jsonl",
+          "size": 856525,
+          "git_blob_sha1": "1472c5d96fb7338553a06897bcb5782543010927"
+        },
+        "queries/agent_hidden.jsonl": {
+          "source": "amazon-data",
+          "path": "Musical_Instruments/agent_hidden.jsonl",
+          "size": 851151,
+          "git_blob_sha1": "6a41a4fb5a89eb102ed7d6787581956ded956538"
+        }
+      }
+    },
+    "amazon-electronics": {
+      "catalog_items": 89371,
+      "query_counts": {
+        "agent_hidden": 339
+      },
+      "files": {
+        "data/product_texts.json": {
+          "source": "amazon-tools",
+          "path": "Electronics/data/product_texts.json",
+          "size": 52903039,
+          "sha256": "cd9555cd1d6c7623c0cc3b84b30f9fcb70be7a6d7e8b1bb1ad440a81b65c3134"
+        },
+        "data/subcategories.json": {
+          "source": "amazon-tools",
+          "path": "Electronics/data/subcategories.json",
+          "size": 4056439,
+          "git_blob_sha1": "9a2ce7518074b618f0b9254b6b2ff0cfb100f12a"
+        },
+        "embeddings/item_embeddings_qwen.pt": {
+          "source": "amazon-tools",
+          "path": "Electronics/embeddings/item_embeddings_qwen.pt",
+          "size": 367852516,
+          "sha256": "a0033048a4c623d9e78dce4979adaa2f4e196b94197ec207f6b5bb0758babc6d"
+        },
+        "embeddings/comp_embeddings_qwen.pt": {
+          "source": "amazon-tools",
+          "path": "Electronics/runs/shared-train-year2020-best-recipes-v1/embeddings/comp_embeddings_qwen.pt",
+          "size": 184821965,
+          "sha256": "a1967b3f8376adc6d1ee079c5cfbdcc2e83de18a44514b134f78b814ea511b47"
+        },
+        "models/recsys_model_qwen.pt": {
+          "source": "amazon-tools",
+          "path": "Electronics/runs/shared-train-year2020-best-recipes-v1/models/recsys_model_qwen.pt",
+          "size": 242754163,
+          "sha256": "ccac1b5a1186a53862117eeba4ef9e01bf604535e2317755213db2f93984aa89"
+        },
+        "queries/agent_hidden.jsonl": {
+          "source": "amazon-data",
+          "path": "Electronics/agent_hidden.jsonl",
+          "size": 147924,
+          "git_blob_sha1": "7dbf950cd6a22cda440204f958aa13071d782073"
+        }
+      }
+    },
+    "amazon-video-games": {
+      "catalog_items": 42818,
+      "query_counts": {},
+      "files": {
+        "data/product_texts.json": {
+          "source": "amazon-tools",
+          "path": "Video_Games/data/product_texts.json",
+          "size": 20893100,
+          "sha256": "e87bb1d026e96612a24422255c6236868b6fe5a6a34494ca719b0154c47a437b"
+        },
+        "data/subcategories.json": {
+          "source": "amazon-tools",
+          "path": "Video_Games/data/subcategories.json",
+          "size": 1684507,
+          "git_blob_sha1": "198c4dea991ed6af583bf81c387b74161f002901"
+        },
+        "embeddings/item_embeddings_qwen.pt": {
+          "source": "amazon-tools",
+          "path": "Video_Games/embeddings/item_embeddings_qwen.pt",
+          "size": 176240285,
+          "sha256": "6c6217d0060837072426a5bbaf2a9c7347fcf0b9c246f4eb877c7b137740579d"
+        },
+        "embeddings/comp_embeddings_qwen.pt": {
+          "source": "amazon-tools",
+          "path": "Video_Games/runs/shared-train-best-recipes-v1/embeddings/comp_embeddings_qwen.pt",
+          "size": 88550285,
+          "sha256": "d697ad96681c98ea385c88b5b816943f09eb6ec114d237f57e1a2814aa3df129"
+        },
+        "models/recsys_model_qwen.pt": {
+          "source": "amazon-tools",
+          "path": "Video_Games/runs/shared-train-best-recipes-v1/models/recsys_model_qwen.pt",
+          "size": 242754611,
+          "sha256": "4124c948bfee2e50cbeac46a52840b6e96af37efff1293d0e5fcf38886d8c28f"
+        }
+      },
+      "unavailable_reason": "The pinned publication contains tools and saved predictions, but not the benchmark query/reference file. Exact benchmark evaluation is unavailable."
+    },
+    "hm-clothing": {
+      "catalog_items": 104993,
+      "query_counts": {
+        "shared_train": 9019,
+        "agent_dev": 2028,
+        "agent_hidden": 1960
+      },
+      "files": {
+        "data/product_texts.json": {
+          "source": "hm-tools",
+          "path": "H_and_M/data/product_texts.json",
+          "size": 32847643,
+          "sha256": "1c248afcf181c2a593f560fa820fdecdce3c894f1d53ce485f37bff75a1e9290"
+        },
+        "data/subcategories.json": {
+          "source": "hm-tools",
+          "path": "H_and_M/data/subcategories.json",
+          "size": 5203714,
+          "git_blob_sha1": "1f47cad854a0556b23bdb8d1b88df14dc599e535"
+        },
+        "embeddings/item_embeddings_qwen.pt": {
+          "source": "hm-tools",
+          "path": "H_and_M/embeddings/item_embeddings_qwen.pt",
+          "size": 432152712,
+          "sha256": "f17d1ea911f9a3590c596c17ce4d59ff31d5d7a31f68c116252301c0fcce58c1"
+        },
+        "embeddings/comp_embeddings_qwen.pt": {
+          "source": "hm-tools",
+          "path": "H_and_M/runs/shared-train-best-recipes-v1/embeddings/comp_embeddings_qwen.pt",
+          "size": 862204045,
+          "sha256": "75fbbcd329df7cba5aa842f93aeb888f73202ae7efadec7d46616c0884beec55"
+        },
+        "models/recsys_model_qwen.pt": {
+          "source": "hm-tools",
+          "path": "H_and_M/runs/shared-train-best-recipes-v1/models/recsys_model_qwen.pt",
+          "size": 242748315,
+          "sha256": "78615ce6995d01cbf4947fdde4944408cd1889db1f799245c717417107bcf645"
+        },
+        "queries/shared_train.jsonl": {
+          "source": "hm-data",
+          "path": "H_and_M/shared_train.jsonl",
+          "size": 8509165,
+          "git_blob_sha1": "391b8b6bfd6751a6baf94a517ec0e2d1b427ec9a"
+        },
+        "queries/agent_dev.jsonl": {
+          "source": "hm-data",
+          "path": "H_and_M/agent_dev.jsonl",
+          "size": 1895051,
+          "git_blob_sha1": "e7953d4e3744529576fdb9092f53f162fcd7f15b"
+        },
+        "queries/agent_hidden.jsonl": {
+          "source": "hm-data",
+          "path": "H_and_M/agent_hidden.jsonl",
+          "size": 1849884,
+          "git_blob_sha1": "d2a2d213401be881b2afe104c780da58a35c485a"
+        }
+      }
+    }
+  }
+}

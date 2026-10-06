@@ -1,0 +1,13 @@
+{
+  "model": "Qwen/Qwen3.8-27B-FP8",
+  "model_revision": "017b9c7af6b5689d5dd426a76e0bc077eb5ca20a",
+  "temperature": 1.0,
+  "max_tool_rounds": 6,
+  "min_distinct_searches": 2,
+  "min_comp_calls": 1,
+  "ledger_limit": 60,
+  "query_timeout_seconds": 480,
+  "thinking_off_max_output_tokens": 1000,
+  "thinking_on_max_output_tokens": 16384,
+  "thinking_token_budget": 4096
+}

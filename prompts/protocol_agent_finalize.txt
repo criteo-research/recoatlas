@@ -1,0 +1,10 @@
+User need: {need}
+
+Candidate set:
+{candidate_lines}
+
+Return only a valid json object with this structure:
+{{"report_explanation": "<brief strategy summary>", "results": [{{"product_id": "<id>", "reasoning": "<why this item fits>"}}]}}
+
+Select exactly {top_k} products from the candidate set only.
+Keep the set relevant, complementary, and non-redundant.

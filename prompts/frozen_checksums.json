@@ -1,0 +1,19 @@
+{
+  "files": {
+    "agents/protocol.py": "f802e7c7abee266111f4d22d6627bbb2eb9e4cea6a5391e15dca81e4efae00eb",
+    "agents/specific_agent.py": "abf607e4057e59819532998dc3b4f5e623dcaade8e555d3049ff0db23f4588d1",
+    "agents/bundle.py": "7fa4fe8aaaf1cf8ab28d03d73a8ec3bab7d27f0a1101c91e5a837f89e21c75df",
+    "agents/diversity.py": "040b3d49e9bc9f70b0a05ec7fd85ee37b5017dd1bd0b4a68b108073581972a0c",
+    "prompts/strategy.txt": "fc1f5c3f0b5d39ebc2728be1691749854de196500674120c5c8f805fe55d0081",
+    "prompts/protocol_agent.txt": "aed9389f4096d7f28a9a92380ecabd4e664653d82b641eb8ec7722e1636cb3fe",
+    "prompts/protocol_agent_finalize.txt": "c8d9b41c61d5eb5cd3d1b5e5e60d310133ddfb8def02e2c764a7248e2281b9ba",
+    "bundle_output_contract.py": "1a3e051b485d321ad7f640ff26059f84936d6c12ceca836923aeefcad18161d8"
+  },
+  "system_prompt_sha256": {
+    "3": "3506842a71581db6b658d36c89022f4cb59228335c2302aaaf75c639ff37a451",
+    "4": "6f38cdaba5b70059987e93b8b25144d3b815c6bfe132ad867d67c74c53ee338c",
+    "5": "0903db0e8bff66358fafb28ce1dc67053c054af0ad3a8705f4404557ed51be6b",
+    "6": "349704908f37fc0b76082415b2da588db24622e9027df7e0f78a11e03adc1e45",
+    "7": "c3360ad7f444c2522db3d6ed637b129f88b67a33b4c34d1f87d5921334ea47ce"
+  }
+}

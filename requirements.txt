@@ -1,0 +1,8 @@
+torch>=2.6,<3
+transformers==4.57.1
+peft==0.17.1
+huggingface-hub>=0.34,<1
+openai>=1.100,<4
+numpy>=1.26,<3
+tqdm>=4.66,<5
+pytest>=8,<10
