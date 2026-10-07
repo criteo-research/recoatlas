@@ -1,0 +1,36 @@
+[project]
+name = "recoatlas"
+version = "0.1.0"
+description = "RecoAtlas: a recommendation environment for LLM agents"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["huggingface-hub>=0.34"]
+
+[project.optional-dependencies]
+tools = ["torch>=2.6", "transformers>=4.57", "peft>=0.17", "numpy>=1.26"]
+# OpenEnv adapter and the `recoatlas-openenv` server.
+server = ["recoatlas[tools]", "openenv>=0.6", "fastmcp>=3", "uvicorn>=0.30"]
+# TRL environment_factory (in-process).
+trl = ["recoatlas[tools]", "datasets>=3"]
+
+[project.scripts]
+recoatlas-openenv = "recoatlas.openenv_env:main"
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[tool.pytest.ini_options]
+markers = ["slow: needs the real H&M files (~2.8 GB download)"]
+addopts = "-m 'not slow'"
+
+[tool.ruff]
+line-length = 120
+extend-exclude = ["src/recoatlas/tools", "src/recoatlas/baselines.py"]
+
+[tool.ruff.lint]
+extend-select = ["I", "B", "UP"]
+ignore = ["TRY004"]  # bad tool arguments are ValueErrors, reported back to the agent
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13"]
+build-backend = "uv_build"
