@@ -12,9 +12,16 @@ tools = ["torch>=2.6", "transformers>=4.57", "peft>=0.17", "numpy>=1.26"]
 server = ["recoatlas[tools]", "openenv>=0.6", "fastmcp>=3", "uvicorn>=0.30"]
 # TRL environment_factory (in-process).
 trl = ["recoatlas[tools]", "datasets>=3"]
+# OpenAI-compatible inference and the blind post-report judge.
+llm = ["openai>=1.99"]
+agent = ["recoatlas[tools,llm]"]
+# Paper vLLM compact JSON grammar (hosted providers can use JSON mode).
+grammar = ["xgrammar==0.2.6"]
 
 [project.scripts]
 recoatlas-openenv = "recoatlas.openenv_env:main"
+recoatlas-agent = "recoatlas.run_agent:main"
+recoatlas-judge = "recoatlas.judge:main"
 
 [dependency-groups]
 dev = ["pytest>=8", "ruff>=0.6"]

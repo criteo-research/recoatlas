@@ -15,7 +15,8 @@ this:
      from other subcategories (learned from co-purchases in the default "utility" tools);
    - `get_substitute_products(item_ids)`: splits a list into kept products and removed
      near-duplicates (same subcategory, very similar).
-3. **It submits a report** of exactly K products, each with a short reason.
+3. **It submits a report** of K products, each with a short reason. The paper parser removes
+   duplicate, unknown and unobserved IDs, then fills missing positions from earlier discoveries.
 4. **The report is compared with the request's reference items:** K products taken from one real
    customer's purchases. The request was written to describe those products. K is between 3 and 7.
 
@@ -26,6 +27,12 @@ this:
 - **`valid`:** 1 if the report has exactly K different catalog products, each returned earlier by
   `search_products` or `get_complementary_products`. Otherwise 0.
 - **`reward_direct`:** `sethit` if valid, otherwise −1. This is the RL reward.
+
+Validity and rewards are computed **after** filtering/backfilling, in every RL adapter.
+Backfilling uses discovery order, never reference labels. Malformed schemas fail without
+backfilling. If too few candidates were discovered, the processed report can remain short;
+it receives partial SetHit but an invalid-report RL reward. A missing/failed report has zero
+SetHit and reward −1. SetHit and the training reward are separate signals.
 
 ## 1. Install
 
@@ -62,8 +69,8 @@ print(ep.submit([{"product_id": p, "reasoning": "fits the outfit"} for p in pick
 print(ep.score())  # {'sethit': ..., 'valid': 1, 'reward_direct': ...}
 ```
 
-- **`submit` says what is wrong** with a report (count, duplicates, unknown or unseen products)
-  without revealing the reference items.
+- **`submit` returns the processed report** under `report`, plus label-free `valid` and `errors`.
+  Raw submissions are retained in `ep.submissions`. Rewards and references are not returned by `submit`.
 - **You can submit again.** The last report is the one scored.
 
 ## 4. Run a whole split
@@ -77,12 +84,94 @@ from recoatlas.baselines import run_baseline
 n = len(env.splits["agent_hidden"])  # 1,960 requests
 with ThreadPoolExecutor(32) as pool:
     scores = list(pool.map(lambda i: run_baseline(env.episode("agent_hidden", index=i)), range(n)))
-print(sum(s["sethit"] for s in scores) / n)  # 0.0070
+print(sum(s["sethit"] for s in scores) / n)
 ```
 
 All threads share one `env`, so the tools are loaded once.
 
-## 5. Plug in your own agent
+## 5. Run the paper agent
+
+Install the inference client, tools and frozen grammar compiler:
+
+```bash
+uv sync --extra agent --extra grammar
+```
+
+You need a running OpenAI-compatible model endpoint. The paper configuration is packaged in
+`src/recoatlas/configs/paper_agent.json`; it records the Qwen checkpoint/revision, temperature and
+thinking limits. For paper-compatible local Qwen inference, the server must support compact
+`structured_outputs.grammar`, the Qwen thinking chat-template parameters, and (for thinking on)
+`thinking_token_budget` with a reasoning parser. This package does not start or download the
+27B agent model. Loading `Env` downloads only the recommendation-tool model and artifacts.
+
+Configure the endpoint and, if it requires authentication, a key:
+
+```bash
+export OPENAI_BASE_URL=http://127.0.0.1:8001/v1
+export OPENAI_API_KEY=EMPTY  # only for an unauthenticated local endpoint
+```
+
+Use your actual key for an authenticated endpoint; do not commit it. `.env` files are not loaded
+automatically. Start with one development query:
+
+```bash
+uv run recoatlas-agent --dataset hm-clothing --split agent_dev --limit 1 \
+  --device cuda --thinking off --output runs/smoke.jsonl
+```
+
+Then evaluate the hidden split (omit `--limit` to include every query):
+
+```bash
+uv run recoatlas-agent --dataset hm-clothing --split agent_hidden \
+  --device cuda --thinking off --tools utility --output runs/utility-off.jsonl
+uv run recoatlas-agent --dataset hm-clothing --split agent_hidden \
+  --device cuda --thinking off --tools semantic --output runs/semantic-off.jsonl
+```
+
+Use `--device cpu` without a GPU; this controls the recommendation tools, not the remote agent.
+Use `--model` if the endpoint serves a different name, and `--thinking on` for the other paper
+mode. Keep `qwen` in a local Qwen model alias: the original transport uses that name to select
+the thinking parameters. A hosted endpoint can use `--hosted --json-only --model YOUR_MODEL`; that changes the serving
+protocol and is recorded in the summary. The frozen strategy and task contract stay fixed.
+
+Each run writes reports, tool traces, model calls, protocol counts and post-report SetHit to JSONL,
+plus a `.summary.json`. Failed queries stay in the denominator with zero SetHit. Existing files
+are never overwritten. `--limit` results are subset results, not full-benchmark results.
+
+The Python entry point is `Agent(env, backend).run(request, k)`; there is only one agent
+implementation. Six decision rounds, two distinct searches and one complementarity call are
+agent-side requirements. The near-duplicate call at 0.95 is requested but not forced. Its result
+is advisory: it does not delete candidates or override the final selection. The environment itself
+does not impose the agent's budget on arbitrary RL policies.
+
+## 6. Judge completed reports
+
+The direct-relevance judge gives **one 0–4 score per recommended set**, normalized by four.
+It sees the request, K and anonymized catalog descriptions (300 characters each), not reference
+items, purchase history, agent explanations, tool condition, retrieval scores or SetHit.
+
+First validate saved predictions without calling an API:
+
+```bash
+uv run --extra llm recoatlas-judge --traces runs/utility-off.jsonl --dry-run
+```
+
+Then set `OPENAI_BASE_URL` and `OPENAI_API_KEY` for your judge endpoint (which can differ from the
+agent endpoint), and explicitly select an accessible deployment:
+
+```bash
+uv run --extra llm recoatlas-judge --traces runs/utility-off.jsonl \
+  --model YOUR_JUDGE_DEPLOYMENT --output runs/utility-off-judge.jsonl
+```
+
+The paper deployment alias is `gpt-5.6-luna`; using another model is recorded as such. For traces
+from `agent_dev`, add `--split agent_dev`. Judging incurs API charges and is never launched
+automatically by an agent rollout or reward computation. Up to three attempts are recorded per
+report; the first valid response is used. Failed judgments remain unresolved, not zero. Failed
+agent reports are skipped; an incomplete report marked complete is rejected during preflight.
+Judging requires only the `llm` extra and catalog/query files, not embeddings or a GPU.
+
+## 7. Plug in your own agent
 
 For each request, your agent:
 
@@ -93,7 +182,7 @@ For each request, your agent:
 
 Then average `ep.score()["sethit"]` over the split.
 
-## 6. Train with RL
+## 8. Train with RL
 
 - **TRL:** pass `recoatlas.trl.RecoAtlasEnvironment` to `GRPOTrainer` as `environment_factory`.
   See `examples/trl_grpo.py`.
@@ -115,10 +204,16 @@ variables instead, e.g. `RECOATLAS_DEVICE=cuda`.
 | setting | default | what it does |
 |---|---|---|
 | `tools` | `"utility"` | `"utility"`: search and complementary tools fine-tuned on purchase data. `"semantic"`: the pretrained embeddings without that fine-tuning. |
-| `max_tool_results` | `20` | most products one call returns; `None` = no limit |
+| `max_tool_results` | `None` | optional cap for custom experiments; the paper agent requires no environment cap |
 | `tool_noise` | `0.0` | share of complementary and near-duplicate results deliberately corrupted (by default, swapped for a random product of the same subcategory), to test robustness to faulty tools |
 | `device` | `"cpu"` | `"cpu"` or `"cuda"` |
 | `batch_search` | `False` | `True`: searches from parallel episodes share one encoder pass, about 4× faster; scores then vary by up to 0.0001 |
+
+The deterministic baseline asks for `max(20, 5*K)` candidates. The paper agent forwards each
+chosen `top_k` (the compact grammar permits 1–100); it is not silently reduced to 20 or to the
+baseline's count. Its prompt-visible ledger holds 60 candidates. Paper-agent runs reject capped
+or batched environments. The existing tool-noise setting remains available for controlled
+corruption experiments; it does not change the frozen agent prompt.
 
 ## More
 

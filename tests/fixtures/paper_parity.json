@@ -1,0 +1,1800 @@
+{
+  "source_commit": "5e818e6ee4766dd1ec5aa646cc39b1d6dbff6aaf",
+  "system_prompt_sha256": {
+    "3": "3506842a71581db6b658d36c89022f4cb59228335c2302aaaf75c639ff37a451",
+    "4": "6f38cdaba5b70059987e93b8b25144d3b815c6bfe132ad867d67c74c53ee338c",
+    "5": "0903db0e8bff66358fafb28ce1dc67053c054af0ad3a8705f4404557ed51be6b",
+    "6": "349704908f37fc0b76082415b2da588db24622e9027df7e0f78a11e03adc1e45",
+    "7": "c3360ad7f444c2522db3d6ed637b129f88b67a33b4c34d1f87d5921334ea47ce"
+  },
+  "cases": [
+    {
+      "name": "normal_k3",
+      "k": 3,
+      "query": "Assemble a practical outfit with distinct roles.",
+      "responses": [
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_complementary_products",
+          "action_input": {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_substitute_products",
+          "action_input": {
+            "item_ids": [
+              "i0",
+              "i1",
+              "i2"
+            ],
+            "similarity_threshold": 0.95
+          }
+        },
+        {
+          "report_explanation": "One distinct product per role.",
+          "results": [
+            {
+              "product_id": "i0",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i1",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "Fits a requested role."
+            }
+          ]
+        }
+      ],
+      "error": null,
+      "report_sha256": "6c410d41bf73af9d9f313b61483505651d1d0215fb25e3231be7e3cc47c775e7",
+      "messages_sha256": [
+        "94b72e95ad1214ea09778f43bfe26199d1f66c73ac8950b6bf1304ef53faacf8",
+        "ac9c4d24340c967306e1b361a13572d5b89346ae8c6dc67c5d8fccee34b7872d",
+        "5715a2f96cbbf33d8466620bd099a1f4888b8624f7bae5cf6ab7710951259b79",
+        "b42b4f8fc4eb820a9620ee05c08111517f06ec1ec225d5d6f67316e3d0beebce",
+        "03ac948d05b87f690ee818ebf52fe5c13fc8565040460079f6ef8496fe26d0eb"
+      ],
+      "tool_calls": [
+        [
+          "search_products",
+          {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        ],
+        [
+          "search_products",
+          {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        ],
+        [
+          "get_complementary_products",
+          {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        ],
+        [
+          "get_substitute_products",
+          {
+            "item_ids": [
+              "i0",
+              "i1",
+              "i2"
+            ],
+            "similarity_threshold": 0.95
+          }
+        ]
+      ],
+      "protocol": {
+        "distinct_searches": 2,
+        "complementarity_calls": 1,
+        "minimum_met": true,
+        "missing": [],
+        "diversity_calls": 1,
+        "diversity_check_performed": true
+      }
+    },
+    {
+      "name": "normal_k4",
+      "k": 4,
+      "query": "Assemble a practical outfit with distinct roles.",
+      "responses": [
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_complementary_products",
+          "action_input": {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_substitute_products",
+          "action_input": {
+            "item_ids": [
+              "i0",
+              "i1",
+              "i2"
+            ],
+            "similarity_threshold": 0.95
+          }
+        },
+        {
+          "report_explanation": "One distinct product per role.",
+          "results": [
+            {
+              "product_id": "i0",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i1",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i3",
+              "reasoning": "Fits a requested role."
+            }
+          ]
+        }
+      ],
+      "error": null,
+      "report_sha256": "3b5a00e1aad3b097b508087730f9b2e7509d077c2fdc9b69009b21e89c59f2ba",
+      "messages_sha256": [
+        "67323fb224cdbb8c50a628b8a454cf6aeff31ff96120216e002723cdc4bb5582",
+        "ff3489ce995526518c33f66ef595ddcf49085b2b2d0d95ef19cf441b415987e9",
+        "51520f90549635f826c92cc806eb41e32bac770330b6fb3ec4acabbaf774a067",
+        "9bbdf3e0412f21b74a098d2148284d34ef67334f9fb24aabc00d2aa57473b909",
+        "ba5e851059841d14a6a6c3f8bd222866288cacfa0c5b6edcaeb450fb7e3d47b1"
+      ],
+      "tool_calls": [
+        [
+          "search_products",
+          {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        ],
+        [
+          "search_products",
+          {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        ],
+        [
+          "get_complementary_products",
+          {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        ],
+        [
+          "get_substitute_products",
+          {
+            "item_ids": [
+              "i0",
+              "i1",
+              "i2"
+            ],
+            "similarity_threshold": 0.95
+          }
+        ]
+      ],
+      "protocol": {
+        "distinct_searches": 2,
+        "complementarity_calls": 1,
+        "minimum_met": true,
+        "missing": [],
+        "diversity_calls": 1,
+        "diversity_check_performed": true
+      }
+    },
+    {
+      "name": "normal_k5",
+      "k": 5,
+      "query": "Assemble a practical outfit with distinct roles.",
+      "responses": [
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_complementary_products",
+          "action_input": {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_substitute_products",
+          "action_input": {
+            "item_ids": [
+              "i0",
+              "i1",
+              "i2"
+            ],
+            "similarity_threshold": 0.95
+          }
+        },
+        {
+          "report_explanation": "One distinct product per role.",
+          "results": [
+            {
+              "product_id": "i0",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i1",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i3",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i4",
+              "reasoning": "Fits a requested role."
+            }
+          ]
+        }
+      ],
+      "error": null,
+      "report_sha256": "b26c0b7ba83252a319c832630020c4c894ac5c148840385b8d84001e6d07821a",
+      "messages_sha256": [
+        "7a6e00686c4b2a0c1aa3e0818f74dd000278e330d079d46d8baecb989f0c46f3",
+        "a64f322af315d226d7a870991f61f07ac66ca06cb9efdbad230babca7d20898f",
+        "b22df4b1551354b732bbdd69307343ba3ef11784e71e625fb050d6b554764a13",
+        "351747c10b4db9ed688cbbc67becfd55c45a2c615c1a384369612536dc41a9f4",
+        "ed1ebc8032c804d3d21e680564e257adb14a7cf0e57c38b6793b7d01bbc21221"
+      ],
+      "tool_calls": [
+        [
+          "search_products",
+          {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        ],
+        [
+          "search_products",
+          {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        ],
+        [
+          "get_complementary_products",
+          {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        ],
+        [
+          "get_substitute_products",
+          {
+            "item_ids": [
+              "i0",
+              "i1",
+              "i2"
+            ],
+            "similarity_threshold": 0.95
+          }
+        ]
+      ],
+      "protocol": {
+        "distinct_searches": 2,
+        "complementarity_calls": 1,
+        "minimum_met": true,
+        "missing": [],
+        "diversity_calls": 1,
+        "diversity_check_performed": true
+      }
+    },
+    {
+      "name": "normal_k6",
+      "k": 6,
+      "query": "Assemble a practical outfit with distinct roles.",
+      "responses": [
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_complementary_products",
+          "action_input": {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_substitute_products",
+          "action_input": {
+            "item_ids": [
+              "i0",
+              "i1",
+              "i2"
+            ],
+            "similarity_threshold": 0.95
+          }
+        },
+        {
+          "report_explanation": "One distinct product per role.",
+          "results": [
+            {
+              "product_id": "i0",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i1",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i3",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i4",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i5",
+              "reasoning": "Fits a requested role."
+            }
+          ]
+        }
+      ],
+      "error": null,
+      "report_sha256": "b01b32e710e4382e8806885e1b06299fb33086c7a1bcc0e3d5e7b5e1d2090d65",
+      "messages_sha256": [
+        "838190814c3539d56b5651f1d85e88f715d3de0636839c2a28277ea27dc2b74b",
+        "f3a17c739113f9f44bafb45c463885d977f5f79a34965eee38cb75626790f345",
+        "05724b2630d63893a27c65241190d199d0d0cbb4045b7a4790e71d9028c57984",
+        "0f88d146a149fc67e1538969f670730319404eff261c17ef16c1745585c56761",
+        "8cba4b1f643d13957766c68fe2ca58ea6d10cece69e233c1ddd79d79bc1d72b8"
+      ],
+      "tool_calls": [
+        [
+          "search_products",
+          {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        ],
+        [
+          "search_products",
+          {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        ],
+        [
+          "get_complementary_products",
+          {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        ],
+        [
+          "get_substitute_products",
+          {
+            "item_ids": [
+              "i0",
+              "i1",
+              "i2"
+            ],
+            "similarity_threshold": 0.95
+          }
+        ]
+      ],
+      "protocol": {
+        "distinct_searches": 2,
+        "complementarity_calls": 1,
+        "minimum_met": true,
+        "missing": [],
+        "diversity_calls": 1,
+        "diversity_check_performed": true
+      }
+    },
+    {
+      "name": "normal_k7",
+      "k": 7,
+      "query": "Assemble a practical outfit with distinct roles.",
+      "responses": [
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_complementary_products",
+          "action_input": {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_substitute_products",
+          "action_input": {
+            "item_ids": [
+              "i0",
+              "i1",
+              "i2"
+            ],
+            "similarity_threshold": 0.95
+          }
+        },
+        {
+          "report_explanation": "One distinct product per role.",
+          "results": [
+            {
+              "product_id": "i0",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i1",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i3",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i4",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i5",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i6",
+              "reasoning": "Fits a requested role."
+            }
+          ]
+        }
+      ],
+      "error": null,
+      "report_sha256": "049087b3ea9586d672c540cba887612520b10f150ff32daac839fbfbfdc3b2af",
+      "messages_sha256": [
+        "a086b3a63df5644ed4ff4062bc095a61535c86064b896ea65a766b8293004b44",
+        "12f43d4f2f580f79bf345ad11ad84e2a33d46e90b56d63efb3e408876f7feac2",
+        "1bde1384ad3eb8f77761c31c0b0c2b6e10bce84c4fa0bac8a1f43d4c5787b679",
+        "be875f20e574cff518847f5154fa3a5244cf35f4af1df6894a303b5ec18d49eb",
+        "ef8857e5b0b8ecf7bdcfdd5169cacd7f24cc266fb6bd4ee480f56e3315aaae73"
+      ],
+      "tool_calls": [
+        [
+          "search_products",
+          {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        ],
+        [
+          "search_products",
+          {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        ],
+        [
+          "get_complementary_products",
+          {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        ],
+        [
+          "get_substitute_products",
+          {
+            "item_ids": [
+              "i0",
+              "i1",
+              "i2"
+            ],
+            "similarity_threshold": 0.95
+          }
+        ]
+      ],
+      "protocol": {
+        "distinct_searches": 2,
+        "complementarity_calls": 1,
+        "minimum_met": true,
+        "missing": [],
+        "diversity_calls": 1,
+        "diversity_check_performed": true
+      }
+    },
+    {
+      "name": "no_forced_diversity",
+      "k": 3,
+      "query": "Assemble a practical outfit with distinct roles.",
+      "responses": [
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_complementary_products",
+          "action_input": {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        },
+        {
+          "report_explanation": "One distinct product per role.",
+          "results": [
+            {
+              "product_id": "i0",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i1",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "Fits a requested role."
+            }
+          ]
+        }
+      ],
+      "error": null,
+      "report_sha256": "0d0483aedd7ae270a83842f6748f4013a0662c0f7ee2f25ca39f4ced1c73ba27",
+      "messages_sha256": [
+        "94b72e95ad1214ea09778f43bfe26199d1f66c73ac8950b6bf1304ef53faacf8",
+        "ac9c4d24340c967306e1b361a13572d5b89346ae8c6dc67c5d8fccee34b7872d",
+        "5715a2f96cbbf33d8466620bd099a1f4888b8624f7bae5cf6ab7710951259b79",
+        "b42b4f8fc4eb820a9620ee05c08111517f06ec1ec225d5d6f67316e3d0beebce"
+      ],
+      "tool_calls": [
+        [
+          "search_products",
+          {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        ],
+        [
+          "search_products",
+          {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        ],
+        [
+          "get_complementary_products",
+          {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        ]
+      ],
+      "protocol": {
+        "distinct_searches": 2,
+        "complementarity_calls": 1,
+        "minimum_met": true,
+        "missing": [],
+        "diversity_calls": 0,
+        "diversity_check_performed": false
+      }
+    },
+    {
+      "name": "budget_finalizer",
+      "k": 3,
+      "query": "Assemble a practical outfit with distinct roles.",
+      "responses": [
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_complementary_products",
+          "action_input": {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_substitute_products",
+          "action_input": {
+            "item_ids": [
+              "i0",
+              "i1",
+              "i2"
+            ],
+            "similarity_threshold": 0.95
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        },
+        {
+          "report_explanation": "One distinct product per role.",
+          "results": [
+            {
+              "product_id": "i0",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i1",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "Fits a requested role."
+            }
+          ]
+        }
+      ],
+      "error": null,
+      "report_sha256": "331c772b4c421ddf9d59bf55a732a22ff6c84ac4654d279be00f46fd0fc96dc0",
+      "messages_sha256": [
+        "94b72e95ad1214ea09778f43bfe26199d1f66c73ac8950b6bf1304ef53faacf8",
+        "ac9c4d24340c967306e1b361a13572d5b89346ae8c6dc67c5d8fccee34b7872d",
+        "5715a2f96cbbf33d8466620bd099a1f4888b8624f7bae5cf6ab7710951259b79",
+        "b42b4f8fc4eb820a9620ee05c08111517f06ec1ec225d5d6f67316e3d0beebce",
+        "03ac948d05b87f690ee818ebf52fe5c13fc8565040460079f6ef8496fe26d0eb",
+        "0b836aa016f1461b2754cebf79764a6a22cfcd0ce0ab26aa8df22845355b7a73",
+        "5c61118117051e25f4a232e6367c0ff8ca0c7a90f34022a762dba084ad61fd81"
+      ],
+      "tool_calls": [
+        [
+          "search_products",
+          {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        ],
+        [
+          "search_products",
+          {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        ],
+        [
+          "get_complementary_products",
+          {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        ],
+        [
+          "get_substitute_products",
+          {
+            "item_ids": [
+              "i0",
+              "i1",
+              "i2"
+            ],
+            "similarity_threshold": 0.95
+          }
+        ],
+        [
+          "search_products",
+          {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        ],
+        [
+          "search_products",
+          {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        ]
+      ],
+      "protocol": {
+        "distinct_searches": 2,
+        "complementarity_calls": 1,
+        "minimum_met": true,
+        "missing": [],
+        "diversity_calls": 1,
+        "diversity_check_performed": true
+      }
+    },
+    {
+      "name": "early_final_guard",
+      "k": 3,
+      "query": "Assemble a practical outfit with distinct roles.",
+      "responses": [
+        {
+          "report_explanation": "One distinct product per role.",
+          "results": [
+            {
+              "product_id": "i0",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i1",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "Fits a requested role."
+            }
+          ]
+        },
+        {
+          "report_explanation": "One distinct product per role.",
+          "results": [
+            {
+              "product_id": "i0",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i1",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "Fits a requested role."
+            }
+          ]
+        },
+        {
+          "report_explanation": "One distinct product per role.",
+          "results": [
+            {
+              "product_id": "i0",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i1",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "Fits a requested role."
+            }
+          ]
+        },
+        {
+          "report_explanation": "One distinct product per role.",
+          "results": [
+            {
+              "product_id": "i0",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i1",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "Fits a requested role."
+            }
+          ]
+        },
+        {
+          "report_explanation": "One distinct product per role.",
+          "results": [
+            {
+              "product_id": "i0",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i1",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "Fits a requested role."
+            }
+          ]
+        },
+        {
+          "report_explanation": "One distinct product per role.",
+          "results": [
+            {
+              "product_id": "i0",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i1",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "Fits a requested role."
+            }
+          ]
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_substitute_products",
+          "action_input": {
+            "item_ids": [
+              "i0",
+              "i1",
+              "i2"
+            ],
+            "similarity_threshold": 0.95
+          }
+        },
+        {
+          "report_explanation": "One distinct product per role.",
+          "results": [
+            {
+              "product_id": "i0",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i1",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "Fits a requested role."
+            }
+          ]
+        }
+      ],
+      "error": null,
+      "report_sha256": "545de181071aa9f6bf1aa056028eee05d41acba29aabaf44ad1a9c6c80f728ff",
+      "messages_sha256": [
+        "94b72e95ad1214ea09778f43bfe26199d1f66c73ac8950b6bf1304ef53faacf8",
+        "85a9b5969ea9af7fa879815b843dc64a17335bc5d2049bd082d1ae68a846229a",
+        "df0c52071db9a50622b06178c224118bc1cd2009bdcba0a7dc64ea1017eba96e",
+        "2a098e13a028181ed766609a01553a319fe43a0e061bdcdf1cb0858d5effd5fc",
+        "7a80a36e9dc30f377fad36f8b69c7f959f1e0bce7941b14e81e9d89cde88156e",
+        "70983e4556d059792b1875c3f34996618ab2b290bcd8ca99f1ded680b55d3a09",
+        "db65247e1b892cfd74d5185057db8d8cc2e892412a1c8644edc36b9b00b5e69d",
+        "af84eaa9fb7c24b032a870e8c4385f32b51adff257bed146b93ca1947e101b79"
+      ],
+      "tool_calls": [
+        [
+          "search_products",
+          {
+            "query": "Assemble a practical outfit with distinct roles.",
+            "top_k": 10
+          }
+        ],
+        [
+          "search_products",
+          {
+            "query": "Assemble a practical outfit with distinct roles. Focus on a different missing functional role in the requested bundle.",
+            "top_k": 10
+          }
+        ],
+        [
+          "get_complementary_products",
+          {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 10
+          }
+        ],
+        [
+          "get_substitute_products",
+          {
+            "item_ids": [
+              "i0",
+              "i1",
+              "i2"
+            ],
+            "similarity_threshold": 0.95
+          }
+        ]
+      ],
+      "protocol": {
+        "premature_finalizations": 3,
+        "repair_attempts": 3,
+        "forced_actions": 3,
+        "distinct_searches": 2,
+        "complementarity_calls": 1,
+        "minimum_met": true,
+        "missing": [],
+        "diversity_calls": 1,
+        "diversity_check_performed": true
+      }
+    },
+    {
+      "name": "nested_final",
+      "k": 3,
+      "query": "Assemble a practical outfit with distinct roles.",
+      "responses": [
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_complementary_products",
+          "action_input": {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        },
+        {
+          "action_input": {
+            "report_explanation": "One distinct product per role.",
+            "results": [
+              {
+                "product_id": "i0",
+                "reasoning": "Fits a requested role."
+              },
+              {
+                "product_id": "i1",
+                "reasoning": "Fits a requested role."
+              },
+              {
+                "product_id": "i2",
+                "reasoning": "Fits a requested role."
+              }
+            ]
+          }
+        }
+      ],
+      "error": null,
+      "report_sha256": "0d0483aedd7ae270a83842f6748f4013a0662c0f7ee2f25ca39f4ced1c73ba27",
+      "messages_sha256": [
+        "94b72e95ad1214ea09778f43bfe26199d1f66c73ac8950b6bf1304ef53faacf8",
+        "ac9c4d24340c967306e1b361a13572d5b89346ae8c6dc67c5d8fccee34b7872d",
+        "5715a2f96cbbf33d8466620bd099a1f4888b8624f7bae5cf6ab7710951259b79",
+        "b42b4f8fc4eb820a9620ee05c08111517f06ec1ec225d5d6f67316e3d0beebce"
+      ],
+      "tool_calls": [
+        [
+          "search_products",
+          {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        ],
+        [
+          "search_products",
+          {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        ],
+        [
+          "get_complementary_products",
+          {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        ]
+      ],
+      "protocol": {
+        "nested_final_repairs": 1,
+        "distinct_searches": 2,
+        "complementarity_calls": 1,
+        "minimum_met": true,
+        "missing": [],
+        "diversity_calls": 0,
+        "diversity_check_performed": false
+      }
+    },
+    {
+      "name": "malformed_decision_repair",
+      "k": 3,
+      "query": "Assemble a practical outfit with distinct roles.",
+      "responses": [
+        {},
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_complementary_products",
+          "action_input": {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        },
+        {
+          "report_explanation": "One distinct product per role.",
+          "results": [
+            {
+              "product_id": "i0",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i1",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "Fits a requested role."
+            }
+          ]
+        }
+      ],
+      "error": null,
+      "report_sha256": "0d0483aedd7ae270a83842f6748f4013a0662c0f7ee2f25ca39f4ced1c73ba27",
+      "messages_sha256": [
+        "94b72e95ad1214ea09778f43bfe26199d1f66c73ac8950b6bf1304ef53faacf8",
+        "370eac1fb4ae31b0778b2f99f768dfe6128592b78397e386aec8cb3591185e92",
+        "ac9c4d24340c967306e1b361a13572d5b89346ae8c6dc67c5d8fccee34b7872d",
+        "5715a2f96cbbf33d8466620bd099a1f4888b8624f7bae5cf6ab7710951259b79",
+        "b42b4f8fc4eb820a9620ee05c08111517f06ec1ec225d5d6f67316e3d0beebce"
+      ],
+      "tool_calls": [
+        [
+          "search_products",
+          {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        ],
+        [
+          "search_products",
+          {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        ],
+        [
+          "get_complementary_products",
+          {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        ]
+      ],
+      "protocol": {
+        "malformed_decisions": 1,
+        "repair_attempts": 1,
+        "repair_successes": 1,
+        "distinct_searches": 2,
+        "complementarity_calls": 1,
+        "minimum_met": true,
+        "missing": [],
+        "diversity_calls": 0,
+        "diversity_check_performed": false
+      }
+    },
+    {
+      "name": "invalid_diversity_ids",
+      "k": 3,
+      "query": "Assemble a practical outfit with distinct roles.",
+      "responses": [
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_complementary_products",
+          "action_input": {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_substitute_products",
+          "action_input": {
+            "item_ids": [
+              "i99"
+            ],
+            "similarity_threshold": 0.95
+          }
+        },
+        {
+          "report_explanation": "One distinct product per role.",
+          "results": [
+            {
+              "product_id": "i0",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i1",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "Fits a requested role."
+            }
+          ]
+        }
+      ],
+      "error": null,
+      "report_sha256": "f9a1a7ada76f877eb05d6e2cad2f6e151d8bc72a9157be01700369100b515b0f",
+      "messages_sha256": [
+        "94b72e95ad1214ea09778f43bfe26199d1f66c73ac8950b6bf1304ef53faacf8",
+        "ac9c4d24340c967306e1b361a13572d5b89346ae8c6dc67c5d8fccee34b7872d",
+        "5715a2f96cbbf33d8466620bd099a1f4888b8624f7bae5cf6ab7710951259b79",
+        "b42b4f8fc4eb820a9620ee05c08111517f06ec1ec225d5d6f67316e3d0beebce",
+        "e3b0fe858174da5cb6042d12fdd944525bbf74e29cd97e9ebe28b4eb82695047"
+      ],
+      "tool_calls": [
+        [
+          "search_products",
+          {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        ],
+        [
+          "search_products",
+          {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        ],
+        [
+          "get_complementary_products",
+          {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        ]
+      ],
+      "protocol": {
+        "distinct_searches": 2,
+        "complementarity_calls": 1,
+        "minimum_met": true,
+        "missing": [],
+        "diversity_calls": 0,
+        "diversity_check_performed": false
+      }
+    },
+    {
+      "name": "invalid_diversity_threshold",
+      "k": 3,
+      "query": "Assemble a practical outfit with distinct roles.",
+      "responses": [
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_complementary_products",
+          "action_input": {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_substitute_products",
+          "action_input": {
+            "item_ids": [
+              "i0"
+            ],
+            "similarity_threshold": 0.2
+          }
+        },
+        {
+          "report_explanation": "One distinct product per role.",
+          "results": [
+            {
+              "product_id": "i0",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i1",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "Fits a requested role."
+            }
+          ]
+        }
+      ],
+      "error": null,
+      "report_sha256": "99a66e839ecf182f9182c56dd1f3a904180d7cf12e553294c1c9ff5b6efae89f",
+      "messages_sha256": [
+        "94b72e95ad1214ea09778f43bfe26199d1f66c73ac8950b6bf1304ef53faacf8",
+        "ac9c4d24340c967306e1b361a13572d5b89346ae8c6dc67c5d8fccee34b7872d",
+        "5715a2f96cbbf33d8466620bd099a1f4888b8624f7bae5cf6ab7710951259b79",
+        "b42b4f8fc4eb820a9620ee05c08111517f06ec1ec225d5d6f67316e3d0beebce",
+        "c00dbc430b4ab9dd4a85f756a295a46353ae02458261f0a2ecf58e68a4c33fb2"
+      ],
+      "tool_calls": [
+        [
+          "search_products",
+          {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        ],
+        [
+          "search_products",
+          {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        ],
+        [
+          "get_complementary_products",
+          {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        ]
+      ],
+      "protocol": {
+        "distinct_searches": 2,
+        "complementarity_calls": 1,
+        "minimum_met": true,
+        "missing": [],
+        "diversity_calls": 0,
+        "diversity_check_performed": false
+      }
+    },
+    {
+      "name": "filter_backfill",
+      "k": 3,
+      "query": "Assemble a practical outfit with distinct roles.",
+      "responses": [
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_complementary_products",
+          "action_input": {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        },
+        {
+          "results": [
+            {
+              "product_id": "i99",
+              "reasoning": "fit"
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "fit"
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "fit"
+            },
+            {
+              "product_id": "unknown",
+              "reasoning": "fit"
+            }
+          ]
+        }
+      ],
+      "error": null,
+      "report_sha256": "07f0e74cffc83b1953541eddd9c2380d7469f8f6980cde3ca375d7693db80288",
+      "messages_sha256": [
+        "94b72e95ad1214ea09778f43bfe26199d1f66c73ac8950b6bf1304ef53faacf8",
+        "ac9c4d24340c967306e1b361a13572d5b89346ae8c6dc67c5d8fccee34b7872d",
+        "5715a2f96cbbf33d8466620bd099a1f4888b8624f7bae5cf6ab7710951259b79",
+        "b42b4f8fc4eb820a9620ee05c08111517f06ec1ec225d5d6f67316e3d0beebce"
+      ],
+      "tool_calls": [
+        [
+          "search_products",
+          {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        ],
+        [
+          "search_products",
+          {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        ],
+        [
+          "get_complementary_products",
+          {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        ]
+      ],
+      "protocol": {
+        "distinct_searches": 2,
+        "complementarity_calls": 1,
+        "minimum_met": true,
+        "missing": [],
+        "diversity_calls": 0,
+        "diversity_check_performed": false
+      }
+    },
+    {
+      "name": "malformed_report",
+      "k": 3,
+      "query": "Assemble a practical outfit with distinct roles.",
+      "responses": [
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_complementary_products",
+          "action_input": {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        },
+        {
+          "results": [
+            {
+              "item_id": "i0"
+            }
+          ]
+        }
+      ],
+      "error": "ValueError",
+      "report_sha256": null,
+      "messages_sha256": [
+        "94b72e95ad1214ea09778f43bfe26199d1f66c73ac8950b6bf1304ef53faacf8",
+        "ac9c4d24340c967306e1b361a13572d5b89346ae8c6dc67c5d8fccee34b7872d",
+        "5715a2f96cbbf33d8466620bd099a1f4888b8624f7bae5cf6ab7710951259b79",
+        "b42b4f8fc4eb820a9620ee05c08111517f06ec1ec225d5d6f67316e3d0beebce"
+      ],
+      "tool_calls": [
+        [
+          "search_products",
+          {
+            "query": "cotton summer shirt",
+            "top_k": 35
+          }
+        ],
+        [
+          "search_products",
+          {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        ],
+        [
+          "get_complementary_products",
+          {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        ]
+      ],
+      "protocol": {
+        "distinct_searches": 2,
+        "complementarity_calls": 1,
+        "minimum_met": true,
+        "missing": [],
+        "diversity_calls": 0,
+        "diversity_check_performed": false
+      }
+    },
+    {
+      "name": "ledger_limit",
+      "k": 3,
+      "query": "Assemble a practical outfit with distinct roles.",
+      "responses": [
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "shirt",
+            "top_k": 100
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "search_products",
+          "action_input": {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_complementary_products",
+          "action_input": {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        },
+        {
+          "thought": "Gather evidence.",
+          "step_goal": "Cover another role.",
+          "action": "get_substitute_products",
+          "action_input": {
+            "item_ids": [
+              "i0",
+              "i1",
+              "i2"
+            ],
+            "similarity_threshold": 0.95
+          }
+        },
+        {
+          "report_explanation": "One distinct product per role.",
+          "results": [
+            {
+              "product_id": "i0",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i1",
+              "reasoning": "Fits a requested role."
+            },
+            {
+              "product_id": "i2",
+              "reasoning": "Fits a requested role."
+            }
+          ]
+        }
+      ],
+      "error": null,
+      "report_sha256": "a54b8863b7f3e71963c8893118aa2ba375870c8afb268e38452ef6866c145a8b",
+      "messages_sha256": [
+        "94b72e95ad1214ea09778f43bfe26199d1f66c73ac8950b6bf1304ef53faacf8",
+        "5ada6c6185c6090269bf0a64798b690cb6638673cf70530dd25060ea65940086",
+        "796821b61597ff5638c4b8902d82372bc12158ab6b42d3c1437b7d6b8ffd020a",
+        "8df6dd0915b7f6f298d6dc08466c3bdc65a6555bc44bfeb0f2841410dc228c63",
+        "2908505015c39f4d6c0fe0de70a5432a14113182c0044ef407479515f9bae7e0"
+      ],
+      "tool_calls": [
+        [
+          "search_products",
+          {
+            "query": "shirt",
+            "top_k": 100
+          }
+        ],
+        [
+          "search_products",
+          {
+            "query": "black high waist trousers",
+            "top_k": 25
+          }
+        ],
+        [
+          "get_complementary_products",
+          {
+            "item_ids": [
+              "i0"
+            ],
+            "top_k": 35
+          }
+        ],
+        [
+          "get_substitute_products",
+          {
+            "item_ids": [
+              "i0",
+              "i1",
+              "i2"
+            ],
+            "similarity_threshold": 0.95
+          }
+        ]
+      ],
+      "protocol": {
+        "distinct_searches": 2,
+        "complementarity_calls": 1,
+        "minimum_met": true,
+        "missing": [],
+        "diversity_calls": 1,
+        "diversity_check_performed": true
+      }
+    }
+  ]
+}

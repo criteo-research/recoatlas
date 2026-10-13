@@ -10,10 +10,17 @@ against the request's reference items, taken from one real customer's purchases.
   [docs/overview.md](docs/overview.md).
 - **Working on the code** (people or coding agents): [AGENTS.md](AGENTS.md).
 
+The paper agent is a single [`Agent`](src/recoatlas/agent.py): the frozen optimized prompt,
+all three tools, six decision rounds, advisory near-duplicate checking, and original report
+filtering/backfilling. The RL adapters use the same report parser before computing rewards.
+The separate [direct-relevance judge](src/recoatlas/judge.py) evaluates completed reports.
+
 ## Install
 
 ```bash
 uv sync --extra tools          # the environment
+uv sync --extra agent --extra grammar  # paper agent with compact vLLM JSON grammar
+uv sync --extra llm            # judge only; no GPU/tool dependencies
 uv sync --extra server         # + OpenEnv adapter and server
 uv sync --extra trl            # + TRL adapter
 uv sync --all-extras           # everything, for development
@@ -31,6 +38,11 @@ ep.submit([{"product_id": "...", "reasoning": "..."}, ...])
 ep.score()  # {"sethit": ..., "valid": ..., "reward_direct": ...}
 ```
 
+For the paper-agent CLI, endpoint/API-key setup, and judging saved outputs, follow
+[ELI5.md](ELI5.md#5-run-the-paper-agent). HF files are pinned and downloaded on first use;
+model serving and a judge endpoint are separate dependencies. The `gpt-5.6-luna` name in the
+paper is a deployment alias, not a guarantee that your API account has that model.
+
 ## Adapters
 
 | module | for |
@@ -38,6 +50,10 @@ ep.score()  # {"sethit": ..., "valid": ..., "reward_direct": ...}
 | `recoatlas.openenv_env` | OpenEnv environment; `recoatlas-openenv` serves many sessions from one process |
 | `recoatlas.trl` | TRL `GRPOTrainer` `environment_factory` (see `examples/trl_grpo.py`) |
 | `recoatlas.miles` | tool service for a Miles RecoAtlas agent loop (see `examples/miles_agent.py`) |
+
+These adapters keep their RL interfaces. Native tool-calling training examples are integration
+examples, not claims that their prompts or complete training trajectories match the paper agent.
+The Miles example requires a checkout containing `examples/recoatlas/`, not the upstream repo alone.
 
 ## Tests
 

@@ -1,5 +1,6 @@
 """RecoAtlas: a recommendation environment for LLM agents."""
 
+from .agent import Agent
 from .env import Env, Episode, Settings
 
 
@@ -8,4 +9,4 @@ def load(dataset: str = "hm-clothing", **settings) -> Env:
     return Env(dataset, **settings)
 
 
-__all__ = ["Env", "Episode", "Settings", "load"]
+__all__ = ["Agent", "Env", "Episode", "Settings", "load"]

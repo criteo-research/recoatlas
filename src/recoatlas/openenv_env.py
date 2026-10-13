@@ -35,7 +35,8 @@ class RecoAtlasEnvironment(MCPEnvironment):
 
     Tools: search_products, get_complementary_products, get_substitute_products, submit_report.
     submit_report ends the episode, also when the report is invalid. The observation's reward is
-    `reward_direct` (-1 for an invalid report), and `sethit` and `valid` are added to its metadata.
+    `reward_direct` (SetHit after paper filtering/backfilling, -1 if still invalid),
+    and `sethit` and `valid` are added to its metadata.
     """
 
     SUPPORTS_CONCURRENT_SESSIONS = True

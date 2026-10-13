@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from collections.abc import Collection, Sequence
+from collections.abc import Collection, Mapping, Sequence
+
+from .reports import prepare_report
 
 REPORT_FORMAT = '[{"product_id": "<ID returned by a tool>", "reasoning": "<why it fits>"}, ...]'
 
@@ -45,11 +47,21 @@ def validation_errors(results, k: int, catalog: Collection[str], seen: Collectio
     return errors
 
 
-def score_report(results, references: Collection[str], catalog: Collection[str], seen: Collection[str]) -> dict:
-    """Return sethit, valid and reward_direct. `results` is None when nothing was submitted."""
+def score_report(results, references: Collection[str], catalog: Mapping[str, str], seen: Sequence[str]) -> dict:
+    """Apply the paper parser, then return sethit, valid and reward_direct.
+
+    `seen` is discovery order, not a set: it determines backfilling. None means
+    no submission. Malformed schemas fail before backfilling and score zero.
+    """
     if not isinstance(results, list):
         return {"sethit": 0.0, "valid": 0, "reward_direct": -1.0}
-    # Malformed entries keep their position (as None) so later positions cannot move up.
+    if isinstance(seen, set | frozenset):
+        raise ValueError("seen must preserve discovery order for paper backfilling")
+    try:
+        report = prepare_report("", {"results": results}, list(seen), [], len(set(references)), catalog)
+    except ValueError:
+        return {"sethit": 0.0, "valid": 0, "reward_direct": -1.0}
+    results = report["results"]
     hit = sethit([item.get("product_id") if isinstance(item, dict) else None for item in results], references, catalog)
     valid = not validation_errors(results, len(set(references)), catalog, seen)
     return {"sethit": hit, "valid": int(valid), "reward_direct": hit if valid else -1.0}

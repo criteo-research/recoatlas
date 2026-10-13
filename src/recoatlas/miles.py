@@ -37,7 +37,10 @@ class MilesToolService:
         return {"ok": True, "content": content, "product_ids": product_ids, "metrics": {}}
 
     async def score(self, task_type: str, ground_truth: list[str], report: Any, seen_product_ids: list[str]) -> dict:
-        """Score a final report. Returns {"reward", "metrics"}; reward = reward_direct."""
+        """Filter/backfill, then score. Preserve discovery order in seen_product_ids.
+
+        Returns {"reward", "metrics"}; reward = reward_direct.
+        """
         if task_type != "bundle":
             raise ValueError(f"RecoAtlas requests are bundles, got task_type={task_type!r}")
         if isinstance(report, str):

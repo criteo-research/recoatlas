@@ -17,8 +17,8 @@ def env():
     return recoatlas.load("hm-clothing", device="cuda" if torch.cuda.is_available() else "cpu")
 
 
-def test_tool_results_are_capped(env):
-    assert len(json.loads(env.search_products("black jersey top", top_k=100))) == 20
+def test_requested_tool_count_is_preserved(env):
+    assert len(json.loads(env.search_products("black jersey top", top_k=100))) == 100
 
 
 def test_only_products_returned_by_tools_are_valid(env):
@@ -27,8 +27,10 @@ def test_only_products_returned_by_tools_are_valid(env):
     ep.get_substitute_products(found)  # the near-duplicate tool never makes products "seen"
     assert ep.seen_ids == found
 
-    ep.submit([{"product_id": i, "reasoning": "r"} for i in ep._references])
-    assert ep.score() == {"sethit": 1.0, "valid": 0, "reward_direct": -1.0}  # right products, never seen
+    submitted = ep.submit([{"product_id": i, "reasoning": "r"} for i in ep._references])
+    assert submitted["valid"]
+    assert all(r["product_id"] in found for r in submitted["report"]["results"])
+    assert ep.score()["reward_direct"] == ep.score()["sethit"]
 
     assert ep.submit([{"product_id": i, "reasoning": "r"} for i in found[: ep.k]])["valid"]
     assert ep.score()["reward_direct"] == ep.score()["sethit"]  # the last submission counts
@@ -60,3 +62,55 @@ def test_miles_service_contract(env):
     report = {"results": [{"product_id": i, "reasoning": "r"} for i in meta["ground_truth"]]}
     scored = asyncio.run(service.score("bundle", meta["ground_truth"], report, seen_product_ids=meta["ground_truth"]))
     assert scored["reward"] == 1.0
+
+
+def test_paper_agent_with_real_tools_and_scripted_model(env):
+    from recoatlas import Agent
+
+    class Backend:
+        def __init__(self):
+            self.step = 0
+
+        def complete(self, **kwargs):
+            state = json.loads(kwargs["messages"][1]["content"])
+            self.step += 1
+            if self.step == 1:
+                action, args = "search_products", {"query": "cotton summer shirt", "top_k": 35}
+            elif self.step == 2:
+                action, args = "search_products", {"query": "black high waist trousers", "top_k": 25}
+            elif self.step == 3:
+                action, args = (
+                    "get_complementary_products",
+                    {
+                        "item_ids": [state["candidate_ledger"][0]["item_id"]],
+                        "top_k": 35,
+                    },
+                )
+            elif self.step == 4:
+                action, args = (
+                    "get_substitute_products",
+                    {
+                        "item_ids": [r["item_id"] for r in state["candidate_ledger"][:10]],
+                        "similarity_threshold": 0.95,
+                    },
+                )
+            else:
+                return json.dumps(
+                    {
+                        "report_explanation": "Scripted integration test",
+                        "results": [
+                            {"product_id": r["item_id"], "reasoning": "Observed candidate"}
+                            for r in state["candidate_ledger"][: state["target_count"]]
+                        ],
+                    }
+                )
+            return json.dumps(
+                {"thought": "Test", "step_goal": "Gather evidence", "action": action, "action_input": args}
+            )
+
+    agent = Agent(env, Backend())
+    report = agent.run("Assemble a summer outfit with distinct useful roles.", 5)
+    assert len(report["results"]) == 5
+    assert agent.protocol_stats()["minimum_met"]
+    assert agent.protocol_stats()["diversity_check_performed"]
+    assert len(report["trace"][0]["tool_result"]) == 35

@@ -33,15 +33,19 @@ RECOATLAS_DEVICE=cuda uv run recoatlas-openenv --port 8000
 3. **The query encoder must load in float32.** transformers 5 defaults to the checkpoint's bfloat16,
    which changed about two thirds of search results. Don't remove the `dtype=torch.float32`.
 4. **Scoring follows v1 and the paper exactly:**
+   - first run `reports.prepare_report`: filter duplicate/out-of-catalog IDs and, when the
+     candidate list is nonempty, unobserved IDs; backfill short reports in discovery order;
+   - malformed schemas fail before backfilling;
    - `sethit` cuts the list to the first K positions *before* dropping duplicates or unknown IDs;
-   - malformed entries keep their position (as `None`);
-   - `reward_direct` = `sethit` if valid, else −1;
+   - the metric receives the processed report, not the raw model selection;
+   - `reward_direct` = `sethit` if the processed report is valid, else −1;
    - "seen" = IDs returned by `search_products` or `get_complementary_products` only.
      `get_substitute_products` never adds to seen.
 5. **Submit feedback never uses the reference items.** It only checks count, duplicates, catalog
    membership and seen.
 6. **The report format is strict:** `product_id` and `reasoning`. Don't accept aliases like
-   `item_id`. Make the format clearer to agents instead (`REPORT_FORMAT`, error messages).
+   `item_id`. Preserve the original parser's fallback for absent `reasoning` and its empty-candidate
+   edge case; neither should be silently rewritten in a parity refactor.
 7. **One `Env` per process, shared by every episode.**
    - Tool methods on `Env` must stay stateless and thread-safe.
    - Per-episode state belongs on `Episode`, or on the caller (Miles keeps its own seen list).
@@ -54,6 +58,17 @@ RECOATLAS_DEVICE=cuda uv run recoatlas-openenv --port 8000
   - TRL builds tool schemas from those docstrings (Google style, an `Args:` block).
   - FastMCP builds schemas from the signatures and docstrings.
   - Edit the descriptions in `env.py` only.
+  - Exception: the paper `Agent` uses the frozen wording in `prompts/agent.json`. Do not replace it
+    with API docstrings. Its fully assembled system prompts must retain the recorded hashes.
+- **Paper agent:** one `Agent` in `agent.py`, no subclass or prompt-extension factories.
+  - Six decision rounds, protocol repairs/guards, ledger and advisory near-duplicate check live here,
+    not in the reusable tools. The finalizer and JSON repairs can add LLM calls, not tool rounds.
+  - `max_tool_results=None` and `batch_search=False` preserve paper calls. The no-LLM baseline
+    requests `max(20, 5*K)`; this is not a cap imposed on LLM tool calls.
+- **Report parser:** `reports.prepare_report`, shared by Agent and RL scoring. Preserve ordered
+  seen IDs all the way through the adapters; converting to a set changes backfilled selections.
+- **Judge:** `judge.py` and `prompts/direct_relevance.json`. Post-report only, no history, gold,
+  tool identity, scores or agent explanations. No automatic judge calls in a training rollout.
 - **Settings:** the `Settings` dataclass.
   - `Settings.from_environ()` reads `RECOATLAS_<FIELD>` for every field. Booleans are `"1"`/`"0"`,
     and `"none"` means `None` for numbers.
@@ -141,7 +156,9 @@ RECOATLAS_DEVICE=cuda uv run recoatlas-openenv --port 8000
 
 - **Tests cover rules the benchmark depends on:**
   - SetHit's first-K rule;
-  - the reward for valid reports, and −1 for each kind of invalid report;
+  - filtering/backfilling before rewards, and −1 for unresolved invalid reports;
+  - replay parity with the original paper agent, including assembled model messages;
+  - blind judge inputs and unresolved judge failures;
   - the result cap;
   - the seen rule;
   - the OpenEnv episode ending with the right reward;

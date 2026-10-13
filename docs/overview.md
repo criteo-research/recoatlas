@@ -36,7 +36,13 @@ variant, under both transformers 4.57.1 and 5.19.
 |---|---|
 | `assets.py` | pinned files and checksums per dataset (`DATASETS`, `SOURCES`); download, verify, load splits |
 | `env.py` | `Settings`; `Env` (tools and requests, loaded once); `Episode` (one request); the agent-facing tool descriptions (`TOOL_DOCS`) |
-| `scoring.py` | `sethit`, label-free report validation, `score_report` |
+| `agent.py` | single frozen three-tool `Agent`, including protocol repair and advisory near-duplicate guidance |
+| `prompts/agent.json`, `configs/paper_agent.json` | frozen assembled prompt components and paper run settings |
+| `reports.py` | original report parser, shared by the agent and all RL reward paths |
+| `scoring.py` | `sethit`, post-processing validity and RL reward |
+| `backend.py`, `output_contract.py` | compatible inference transport, thinking settings, compact three-tool JSON grammar |
+| `run_agent.py` | saved trajectories and post-report exact recovery; no judge calls |
+| `judge.py`, `prompts/direct_relevance.json` | blind whole-set direct-relevance judgments and saved attempts |
 | `batching.py` | `SearchBatcher`, used when `batch_search=True` |
 | `baselines.py` | v1's no-LLM baseline, plus `run_baseline(episode)` |
 | `openenv_env.py`, `trl.py`, `miles.py` | the three adapters |
@@ -49,18 +55,47 @@ variant, under both transformers 4.57.1 and 5.19.
 **`Episode`:**
 - It records the products returned by `search_products` and `get_complementary_products` (the
   "seen" products, as in v1's candidate ledger) and every submitted report.
-- `submit()` checks a report without using the reference items. Submitting again replaces the
-  report.
+- `submit()` runs the same filtering/backfilling parser as the paper agent and returns the
+  processed report with label-free validity. Raw submissions remain available for auditing.
+  Submitting again replaces the report being scored.
 - `score()` scores the last report.
 
 **Scoring:**
+- `reports.prepare_report` rejects malformed result schemas, filters duplicate and out-of-catalog
+  IDs, and filters unobserved IDs when the candidate list is nonempty. It fills short reports from
+  observed candidates in their discovery order, then truncates to K. Backfilled items are marked
+  by their reason string. The parser never reads the reference set.
+- For exact replay fidelity, the original empty-candidate edge case is retained: with no candidates,
+  catalog IDs are not filtered by observation. RL validity still rejects unobserved selections.
 - **`sethit`** cuts the submitted list to its first K positions before removing duplicates and
-  unknown IDs, as in v1's `evaluation/metrics.py`, so padding a report earns nothing.
-- **`reward_direct`** is `sethit` for a valid report and −1 otherwise. This is the training reward
-  of the RecoAtlas paper.
-- **The report format is strict:** `[{"product_id": "...", "reasoning": "..."}, ...]`. Small models
-  often write `item_id`, the key the tools return. So the validation error names the keys it found,
-  and the TRL instructions spell out the format.
+  unknown IDs, as in v1's `evaluation/metrics.py`. Here it receives the processed report.
+- **`reward_direct`** is `sethit` for a valid processed report and −1 otherwise. The adapters keep
+  this reward interface, but validity is determined after the paper parser; there is no alternate
+  strict-raw-report scoring mode. This packaging choice should not be described as a replay of
+  historical RL training runs that used strict raw validity.
+- **The report contract** is `[{"product_id": "...", "reasoning": "..."}, ...]`; `item_id` is not
+  accepted as an alias. The grammar requires reasoning, while the original parser tolerates its
+  absence and supplies a fallback reason. Other malformed schemas fail rather than being backfilled.
+
+**Paper agent and RL interfaces:**
+- `Agent` owns the six-round budget, minimum-evidence repair/guard behavior and persistent ledger.
+  There is no inheritance chain or separate diversity agent. Guard calls consume tool rounds;
+  repair requests and finalization are model calls but not extra tool rounds.
+- Near-duplicate checks use 1–60 unique previously observed IDs at threshold 0.95. Invalid check
+  arguments return an error as that round's observation. Valid checks leave the candidate pool
+  intact. Actual use is logged, not forced.
+- Generic RL policies still use the tools through OpenEnv, TRL or Miles. Their native function-call
+  prompts/loops are owned by the trainer; sharing the environment does not make those loops exact
+  replays of `Agent`. Use `recoatlas-agent` for the frozen paper-agent inference protocol.
+- The judge is a post-report measurement, not a tool or automatic RL reward. It judges each report
+  independently. Missing judge responses are unresolved measurements; summaries include coverage.
+
+**Parity checks:** `tests/fixtures/paper_parity.json` records 15 synthetic replay cases against
+the original runner at commit `5e818e6ee4766dd1ec5aa646cc39b1d6dbff6aaf`. Tests compare report hashes,
+every model request excluding elapsed-time-dependent timeouts, tool calls and protocol counters.
+They cover K=3–7, the finalizer, repair/guard actions, optional/invalid near-duplicate checks,
+backfilling, malformed reports and the ledger limit. Five system-prompt hashes independently pin
+the fully assembled prompts. These tests verify implementation parity, not fresh model outcomes.
 
 ## Design choices
 
@@ -72,11 +107,10 @@ variant, under both transformers 4.57.1 and 5.19.
 - **One container per episode would multiply that copy.** That's the model of formats like Harbor:
   128 parallel RL episodes would hold 128 copies.
 
-**`max_tool_results` (default 20) is the only behaviour added to v1, which has no limit:**
-- the validity rule only accepts products that a tool returned;
-- without a limit, one search for 100,000 products would make every product "seen" and fill the
-  model's context;
-- a larger `top_k` is cut to the limit, and `None` removes it.
+**Candidate counts:** the default `max_tool_results=None` forwards the requested count unchanged.
+The no-LLM baseline requests `max(20, 5*K)`. LLM requests are bounded by the frozen grammar to 1–100,
+not by the baseline's count. An optional environment cap remains available for custom RL experiments;
+the frozen paper agent refuses a capped environment.
 
 **Settings come from environment variables in the adapters:** `RECOATLAS_<SETTING>` (e.g.
 `RECOATLAS_DEVICE=cuda`), plus `RECOATLAS_DATASET`. See `Settings.from_environ`.
@@ -129,7 +163,8 @@ With `device="cuda"`, the tensors are in GPU memory.
 
 - **One search:** about 18 ms on an NVIDIA B200 and about 180 ms on CPU. The other two tools only
   multiply precomputed vectors and are cheaper.
-- **The no-LLM baseline on all 1,960 `agent_hidden` requests:**
+- **The no-LLM baseline on all 1,960 `agent_hidden` requests**, measured with an explicit
+  `max_tool_results=20` cap (not the paper-agent setting):
 
 | setup | time |
 |---|---|
@@ -156,15 +191,6 @@ as encoding one.
     two exceptions were swaps between nearly tied products.
 
   Off gives exact results, reproducible and identical to v1.
-
-## Checked results (H&M)
-
-- **No-LLM baseline on all 1,960 `agent_hidden` requests:** 0.70% `sethit` with the utility tools
-  and 0.49% with the semantic tools; every report valid. The same 0.70% through the OpenEnv server.
-- **Miles:** Miles' RecoAtlas agent loop with Qwen3-4B on 400 requests:
-  - every report valid, 0.9% `sethit`;
-  - every reward matched when recomputed independently by this package.
-- **TRL:** 3 GRPO steps on Qwen3-0.6B with no tool failures.
 
 ## Adding a dataset
 

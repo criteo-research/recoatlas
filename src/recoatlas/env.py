@@ -6,11 +6,12 @@ import functools
 import json
 import os
 import threading
-from collections.abc import Collection
+from collections.abc import Collection, Sequence
 from dataclasses import asdict, dataclass, fields
 
 from . import assets
 from .batching import SearchBatcher
+from .reports import prepare_report
 from .scoring import REPORT_FORMAT, score_report, validation_errors
 
 TOOL_NAMES = ("search_products", "get_complementary_products", "get_substitute_products")
@@ -25,7 +26,8 @@ Args:
     report_explanation: Short explanation of the set.
 
 Returns:
-    JSON {{"valid": bool, "errors": [...]}}, checked without the reference items.
+    JSON with valid, errors and the processed report. IDs are filtered and a short
+    report is backfilled from discovery order, without reference items or scores.
 """
 
 
@@ -34,7 +36,7 @@ class Settings:
     """How the tools behave. Fixed for the lifetime of an `Env`."""
 
     tools: str = "utility"  # "utility" (trained on purchases) or "semantic" (pretrained embeddings), as in v1
-    max_tool_results: int | None = 20  # most products per search/complementary call; None = no limit
+    max_tool_results: int | None = None  # optional experiment cap; paper calls are not capped
     tool_noise: float = 0.0  # share of complementary/near-duplicate results replaced by bad ones
     tool_noise_mode: str = "subcategory"  # kind of bad replacement (v1 tools/_noise.py)
     device: str = "cpu"
@@ -53,7 +55,9 @@ class Settings:
             raw = os.environ.get(f"RECOATLAS_{field.name.upper()}")
             if raw is None:
                 continue
-            if isinstance(field.default, bool):
+            if field.name == "max_tool_results":
+                values[field.name] = None if raw.lower() == "none" else int(raw)
+            elif isinstance(field.default, bool):
                 values[field.name] = raw == "1"
             elif isinstance(field.default, int | float):
                 values[field.name] = None if raw.lower() == "none" else type(field.default)(raw)
@@ -227,9 +231,9 @@ class Env:
         """Start an episode for one request."""
         return Episode(self, self.row(split, index, candidate_id))
 
-    def score(self, results: list[dict] | None, references: Collection[str], seen: Collection[str]) -> dict:
-        """Score a report against the reference products; `seen` = IDs returned by search or complementary calls."""
-        return score_report(results, references, self.catalog, set(seen))
+    def score(self, results: list[dict] | None, references: Collection[str], seen: Sequence[str]) -> dict:
+        """Process and score a report; `seen` is discovery order from search/complementarity."""
+        return score_report(results, references, self.catalog, seen)
 
 
 class Episode:
@@ -268,18 +272,22 @@ class Episode:
         return self.call("get_substitute_products", item_ids=item_ids, similarity_threshold=similarity_threshold)
 
     def submit(self, results: list[dict], report_explanation: str = "") -> dict:
-        """Submit the final report: exactly K products in the shape of `scoring.REPORT_FORMAT`.
+        """Filter/backfill with the paper parser; return the processed report and label-free validity.
 
-        Returns label-free feedback {"valid": bool, "errors": [...]}. Submitting again replaces the report.
+        Raw submissions are retained for auditing; the last submission is scored.
         """
         self.submissions.append({"report_explanation": report_explanation, "results": results})
-        errors = validation_errors(results, self.k, self.env.catalog, self._seen)
-        return {"valid": not errors, "errors": errors}
+        try:
+            report = prepare_report(self.request, self.submissions[-1], self.seen_ids, [], self.k, self.env.catalog)
+        except ValueError:
+            return {"valid": False, "errors": ["INVALID_REPORT_SCHEMA"], "report": None}
+        errors = validation_errors(report["results"], self.k, self.env.catalog, self._seen)
+        return {"valid": not errors, "errors": errors, "report": report}
 
     def score(self) -> dict:
         """Score the last submission: {"sethit", "valid", "reward_direct"}."""
         results = self.submissions[-1]["results"] if self.submissions else None
-        return self.env.score(results, self._references, self._seen)
+        return self.env.score(results, self._references, self.seen_ids)
 
 
 @functools.cache

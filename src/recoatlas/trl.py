@@ -6,7 +6,7 @@
 
 All rollouts share one `Env` per process, configured by RECOATLAS_* environment variables
 (see `recoatlas.env.shared_env`; e.g. RECOATLAS_DEVICE=cuda). The reward is `reward_direct`:
-SetHit for a valid report, -1 otherwise (including no report).
+SetHit for a valid report after paper filtering/backfilling, -1 otherwise (including no report).
 """
 
 from __future__ import annotations
