@@ -12,6 +12,7 @@ from . import assets
 from .agent import PAPER_CONFIG, PROMPTS, Agent
 from .backend import get_client, paper_backend
 from .env import Env
+from .model_profiles import PROFILES
 from .scoring import sethit
 
 
@@ -40,18 +41,38 @@ def main(argv=None):
     p.add_argument("--model", default=PAPER_CONFIG["model"])
     p.add_argument("--base-url")
     p.add_argument("--thinking", choices=["on", "off"], default="off")
-    p.add_argument("--hosted", action="store_true", help="Do not send local Qwen serving parameters")
+    p.add_argument(
+        "--model-profile", choices=["auto", *PROFILES], default="auto", help="Model family for local serving aliases"
+    )
+    p.add_argument(
+        "--hosted",
+        action="store_true",
+        help="Do not send local model controls; hosted reasoning stays provider-managed",
+    )
     p.add_argument("--json-only", action="store_true", help="JSON mode instead of the paper's vLLM grammar")
+    p.add_argument(
+        "--dry-run", action="store_true", help="Print resolved serving settings; no downloads, API key or model calls"
+    )
     p.add_argument("--limit", type=int, help="Run only the first N queries (a subset, not full-split results)")
-    p.add_argument("--output", type=Path, required=True)
+    p.add_argument("--output", type=Path)
     a = p.parse_args(argv)
+    try:
+        backend = paper_backend(
+            None, thinking=a.thinking, local=not a.hosted, grammar=not a.json_only, model_profile=a.model_profile
+        )
+        serving = backend.configuration(a.model)
+    except ValueError as error:
+        p.error(str(error))
+    if a.dry_run:
+        print(json.dumps(serving, indent=2))
+        return 0
+    if a.output is None:
+        p.error("--output is required unless --dry-run is used")
     summary_path = a.output.with_suffix(".summary.json")
     if a.output == summary_path or a.output.exists() or summary_path.exists():
         p.error("Use a new output path distinct from its .summary.json path")
     if a.limit is not None and a.limit < 1:
         p.error("--limit must be positive")
-    if a.hosted and a.thinking == "on":
-        p.error("Thinking-on needs the local Qwen-compatible serving configuration")
     if not a.json_only:
         # Fail before loading tools or sending requests if the grammar extra is missing.
         from .output_contract import compiled_contract
@@ -59,9 +80,8 @@ def main(argv=None):
         for k in range(3, 8):
             compiled_contract(k)
             compiled_contract(k, True)
-    client = get_client(base_url=a.base_url)
+    backend.client = get_client(base_url=a.base_url)
     env = Env(a.dataset, device=a.device, tools=a.tools)
-    backend = paper_backend(client, thinking=a.thinking, local=not a.hosted, grammar=not a.json_only)
     agent = Agent(env, backend, model=a.model)
     rows = env.splits[a.split][: a.limit]
     a.output.parent.mkdir(parents=True, exist_ok=True)
@@ -83,9 +103,10 @@ def main(argv=None):
         "failed": len(rows) - completed,
         "mean_sethit_at_k": total_hit / len(rows) if rows else None,
         "model": a.model,
-        "paper_config": PAPER_CONFIG,
-        "thinking": a.thinking,
-        "local_qwen_parameters": not a.hosted and "qwen" in a.model.lower(),
+        "paper_config": {k: v for k, v in PAPER_CONFIG.items() if k not in {"model", "model_revision"}},
+        "expected_model_revision": PAPER_CONFIG["model_revision"] if a.model == PAPER_CONFIG["model"] else None,
+        "serving": serving,
+        "thinking": serving["thinking"],
         "grammar": not a.json_only,
         "settings": asdict(env.settings),
         "artifact_sources": assets.SOURCES,

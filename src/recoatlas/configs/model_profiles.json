@@ -1,0 +1,41 @@
+{
+  "qwen": {
+    "model_patterns": ["qwen3.8-*", "qwen3.5-*", "qwen3-4b", "qwen3-8b"],
+    "reasoning_parser": "qwen3",
+    "reasoning_start_str": "<think>",
+    "reasoning_end_str": "</think>",
+    "chat_template_kwargs": {"preserve_thinking": false},
+    "provenance": "Request settings preserved from recoatlas-v1 commit 5e818e6; paper_agent.json records the default Qwen checkpoint.",
+    "sources": ["https://docs.vllm.ai/en/latest/features/reasoning_outputs/"]
+  },
+  "gemma4": {
+    "model_patterns": ["gemma-4-31b-it"],
+    "reasoning_parser": "gemma4",
+    "reasoning_start_str": "<|channel>",
+    "reasoning_end_str": "<channel|>",
+    "chat_template_kwargs": {},
+    "provenance": "Documented serving interface checked 2026-10-13; original paper launch configuration not recovered, no live inference validation.",
+    "sources": ["https://docs.vllm.ai/projects/recipes/en/stable/Google/Gemma4.html"]
+  },
+  "nemotron": {
+    "model_patterns": ["nvidia-nemotron-3.5-lightning-30b-a3b-bf16", "nemotron-3.5-lightning-30b-a3b"],
+    "reasoning_parser": "nemotron_v3",
+    "reasoning_start_str": "<think>",
+    "reasoning_end_str": "</think>",
+    "chat_template_kwargs": {},
+    "provenance": "Documented serving interface checked 2026-10-13; original paper launch configuration not recovered, no live inference validation.",
+    "sources": ["https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16"]
+  },
+  "glm4_7": {
+    "model_patterns": ["glm-4.7-flash"],
+    "reasoning_parser": "glm45",
+    "reasoning_start_str": "<think>",
+    "reasoning_end_str": "</think>",
+    "chat_template_kwargs": {"clear_thinking": true},
+    "provenance": "Documented serving interface checked 2026-10-13; original paper launch configuration not recovered, no live inference validation.",
+    "sources": [
+      "https://huggingface.co/zai-org/GLM-4.7-Flash",
+      "https://huggingface.co/zai-org/GLM-4.7-Flash/blob/main/chat_template.jinja"
+    ]
+  }
+}

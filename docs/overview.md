@@ -41,6 +41,7 @@ variant, under both transformers 4.57.1 and 5.19.
 | `reports.py` | original report parser, shared by the agent and all RL reward paths |
 | `scoring.py` | `sethit`, post-processing validity and RL reward |
 | `backend.py`, `output_contract.py` | compatible inference transport, thinking settings, compact three-tool JSON grammar |
+| `model_profiles.py`, `configs/model_profiles.json` | model-specific chat-template controls and required reasoning parser/boundaries; no prompt edits |
 | `run_agent.py` | saved trajectories and post-report exact recovery; no judge calls |
 | `judge.py`, `prompts/direct_relevance.json` | blind whole-set direct-relevance judgments and saved attempts |
 | `batching.py` | `SearchBatcher`, used when `batch_search=True` |
@@ -96,6 +97,18 @@ every model request excluding elapsed-time-dependent timeouts, tool calls and pr
 They cover K=3–7, the finalizer, repair/guard actions, optional/invalid near-duplicate checks,
 backfilling, malformed reports and the ledger limit. Five system-prompt hashes independently pin
 the fully assembled prompts. These tests verify implementation parity, not fresh model outcomes.
+
+**Serving profiles:** `model_profiles.resolve_profile` selects by recognized model identifier or
+explicit profile for served aliases. Unknown local models and conflicting profiles fail before
+tools load or the client sends a request. `ChatBackend` forwards the profile's chat-template
+controls together with the original compact grammar; the model messages are unchanged. Profiles
+share the paper configuration's temperature and output/thinking limits. Server parser/boundary
+requirements and provenance are stored with each run, not asserted as remotely verified settings.
+Qwen's original requests are preserved; the three additional profiles are documented compatibility
+interfaces, not recovered historical launch configurations. See the user guide for sources and
+serving setup. Mock request/response tests cover both thinking modes, alias handling, grammar
+coexistence, separate reasoning fields, rejected mode mismatches and CLI preflight. They do not
+replace testing the real models or verifying the server's budget enforcement.
 
 ## Design choices
 

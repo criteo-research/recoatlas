@@ -14,6 +14,9 @@ The paper agent is a single [`Agent`](src/recoatlas/agent.py): the frozen optimi
 all three tools, six decision rounds, advisory near-duplicate checking, and original report
 filtering/backfilling. The RL adapters use the same report parser before computing rewards.
 The separate [direct-relevance judge](src/recoatlas/judge.py) evaluates completed reports.
+Local model profiles configure thinking on/off for Qwen, Gemma 4, Nemotron 3.5 Lightning and
+GLM-4.7-Flash without changing the agent. See [model setup and validation](ELI5.md#choose-the-agent-model)
+for serving requirements and the distinction between compatibility and paper-run reproduction.
 
 ## Install
 

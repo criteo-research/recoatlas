@@ -69,6 +69,11 @@ RECOATLAS_DEVICE=cuda uv run recoatlas-openenv --port 8000
   seen IDs all the way through the adapters; converting to a set changes backfilled selections.
 - **Judge:** `judge.py` and `prompts/direct_relevance.json`. Post-report only, no history, gold,
   tool identity, scores or agent explanations. No automatic judge calls in a training rollout.
+- **Model transport:** `model_profiles.py` and `configs/model_profiles.json` hold local serving
+  controls. Never rewrite the frozen agent prompt to toggle thinking. Unknown models require an
+  explicit compatible profile; hosted reasoning is provider-managed, not labeled thinking-off.
+  Preserve Qwen request parity. Other profiles are documented interfaces, not evidence of recovered
+  paper launch settings; do not claim live validation based on mocked tests.
 - **Settings:** the `Settings` dataclass.
   - `Settings.from_environ()` reads `RECOATLAS_<FIELD>` for every field. Booleans are `"1"`/`"0"`,
     and `"none"` means `None` for numbers.

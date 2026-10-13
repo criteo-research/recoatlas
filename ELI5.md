@@ -97,12 +97,13 @@ Install the inference client, tools and frozen grammar compiler:
 uv sync --extra agent --extra grammar
 ```
 
-You need a running OpenAI-compatible model endpoint. The paper configuration is packaged in
+You need a running compatible model endpoint. The paper configuration is packaged in
 `src/recoatlas/configs/paper_agent.json`; it records the Qwen checkpoint/revision, temperature and
-thinking limits. For paper-compatible local Qwen inference, the server must support compact
-`structured_outputs.grammar`, the Qwen thinking chat-template parameters, and (for thinking on)
-`thinking_token_budget` with a reasoning parser. This package does not start or download the
-27B agent model. Loading `Env` downloads only the recommendation-tool model and artifacts.
+thinking limits. Local vLLM serving profiles cover Qwen, Gemma 4, Nemotron 3.5 Lightning and
+GLM-4.7-Flash. The server must support compact `structured_outputs.grammar`, the selected model's
+chat-template parameters, and (for thinking on) `thinking_token_budget` with the matching reasoning
+parser. This package does not start or download the agent model. Loading `Env` downloads only
+the recommendation-tool model and artifacts.
 
 Configure the endpoint and, if it requires authentication, a key:
 
@@ -129,13 +130,93 @@ uv run recoatlas-agent --dataset hm-clothing --split agent_hidden \
 ```
 
 Use `--device cpu` without a GPU; this controls the recommendation tools, not the remote agent.
-Use `--model` if the endpoint serves a different name, and `--thinking on` for the other paper
-mode. Keep `qwen` in a local Qwen model alias: the original transport uses that name to select
-the thinking parameters. A hosted endpoint can use `--hosted --json-only --model YOUR_MODEL`; that changes the serving
-protocol and is recorded in the summary. The frozen strategy and task contract stay fixed.
+Use `--model` to select the served model and `--thinking on` for reasoning. Both modes send an
+explicit thinking switch; they do not rely on the server's default. The output limit is 1,000
+tokens with thinking off and 16,384 with thinking on, including a 4,096-token reasoning budget
+in the latter. Temperature is 1 in both modes. These limits are shared across the local profiles.
+
+### Choose the agent model
+
+The following names select their profiles automatically (case-insensitive). For another served
+alias, supply `--model-profile` explicitly. A recognized model with the wrong profile is rejected.
+Unrecognized local models are rejected before downloading tools or making requests; selecting a
+profile for an alias asserts that its underlying model supports that interface.
+
+| Model identifier | Profile | vLLM `--reasoning-parser` |
+|---|---|---|
+| `Qwen/Qwen3.8-27B-FP8` | `qwen` | `qwen3` |
+| `google/gemma-4-31B-it` | `gemma4` | `gemma4` |
+| `nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16` | `nemotron` | `nemotron_v3` |
+| `zai-org/GLM-4.7-Flash` | `glm4_7` | `glm45` |
+
+The Qwen profile also recognizes the paper's Qwen3.5 size variants and Qwen3-4B/8B.
+An explicit profile is not a compatibility guarantee for other model generations or quantizations.
+
+Inspect the resolved controls without an API key, downloads, files or inference:
+
+```bash
+uv run recoatlas-agent --model google/gemma-4-31B-it --thinking on --dry-run
+```
+
+The output includes `required_server.reasoning_parser` and `required_server.reasoning_config`.
+Use those in your vLLM server's `--reasoning-parser` and `--reasoning-config` options. For example,
+on hardware large enough for Gemma 4 (adjust parallelism and context capacity to your hardware):
+
+```bash
+vllm serve google/gemma-4-31B-it --port 8001 --max-model-len 32768 \
+  --reasoning-parser gemma4 \
+  --reasoning-config '{"reasoning_start_str":"<|channel>","reasoning_end_str":"<channel|>"}'
+```
+
+Install a vLLM build that supports that checkpoint, parser, thinking budget and structured-output
+combination; the serving installation is separate from this package's client dependencies. The
+model's chat template must accept `enable_thinking`. See the linked official sources below for
+model-specific installation requirements. This agent emits JSON actions, **not native function
+calls**: do not replace its prompt or enable a different tool-calling agent loop.
+
+Run one development query against the server, then repeat with `--thinking off` and a new output:
+
+```bash
+uv run recoatlas-agent --model google/gemma-4-31B-it --thinking on \
+  --split agent_dev --limit 1 --output runs/gemma-on-smoke.jsonl
+```
+
+If the server uses a custom alias, e.g. `--served-model-name my-local-model`, use:
+
+```bash
+uv run recoatlas-agent --model my-local-model --model-profile gemma4 --thinking off \
+  --split agent_dev --limit 1 --output runs/gemma-off-smoke.jsonl
+```
+
+Inspect the saved model calls: reasoning should be separate from final JSON. Responses with
+unparsed reasoning delimiters, missing final content, exhausted thinking output limits, or
+nonempty reasoning while thinking is off are rejected. Absence of reasoning in a particular
+thinking-on response is not itself an error. Client tests do not prove that a server honors the
+budget: validate both modes on the actual serving installation before running a full split.
+
+**Provenance:** Qwen request controls retain the original release behavior. The other profiles
+implement documented interfaces from [vLLM's Gemma guide](https://docs.vllm.ai/projects/recipes/en/stable/Google/Gemma4.html),
+the [Nemotron model card](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16),
+and the [GLM model card](https://huggingface.co/zai-org/GLM-4.7-Flash) and
+[chat template](https://huggingface.co/zai-org/GLM-4.7-Flash/blob/main/chat_template.jinja).
+Budgeting uses [vLLM's thinking-budget interface](https://docs.vllm.ai/en/latest/features/reasoning_outputs/#thinking-budget-control).
+The original non-Qwen paper launch configurations/revision pins were not recovered and these
+profiles have not been live-inference validated. They provide compatibility, not evidence of
+exact reproduction of the published figure. Keep the checkpoint/tokenizer revisions, vLLM
+version, launch arguments and server sampling defaults with your run; these are not discovered
+or verified by the client.
+
+### Hosted endpoints and saved results
+
+A hosted endpoint can use `--hosted --json-only --model YOUR_MODEL`. This omits local controls:
+reasoning remains provider-managed (`thinking: null` in the run summary), even with the default
+`--thinking off`. `--hosted --thinking on` and hosted model-profile overrides are rejected.
+The frozen strategy and task contract stay fixed.
 
 Each run writes reports, tool traces, model calls, protocol counts and post-report SetHit to JSONL,
-plus a `.summary.json`. Failed queries stay in the denominator with zero SetHit. Existing files
+plus a `.summary.json` containing the resolved model profile, client controls and required server
+settings. The Qwen revision is not attributed to other models. Failed queries stay in the denominator
+with zero SetHit. Existing files
 are never overwritten. `--limit` results are subset results, not full-benchmark results.
 
 The Python entry point is `Agent(env, backend).run(request, k)`; there is only one agent

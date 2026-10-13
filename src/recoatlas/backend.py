@@ -5,6 +5,8 @@ import time
 from collections import Counter
 from typing import Any
 
+from .model_profiles import request_controls, resolve_profile
+
 
 def get_client(*, base_url=None, api_key=None):
     """Standard compatible endpoint; credentials are never stored in run files."""
@@ -19,14 +21,16 @@ def get_client(*, base_url=None, api_key=None):
     return OpenAI(api_key=key or "EMPTY", base_url=url, max_retries=2, timeout=120)
 
 
-def paper_backend(client, *, thinking="off", local=True, grammar=True, capture_model_traces=True):
+def paper_backend(client, *, thinking="off", local=True, grammar=True, capture_model_traces=True, model_profile="auto"):
     """Use the paper decoding settings; the server must support the selected options."""
     from .agent import PAPER_CONFIG
 
     if thinking not in {"on", "off"}:
         raise ValueError("thinking must be on or off")
     if not local and thinking == "on":
-        raise ValueError("The paper thinking-on setting requires a local Qwen-compatible endpoint")
+        raise ValueError(
+            "Thinking-on requires a supported local vLLM model profile; hosted reasoning is not configured"
+        )
     backend = ChatBackend(
         client,
         max_output_tokens=PAPER_CONFIG[f"thinking_{thinking}_max_output_tokens"],
@@ -36,6 +40,7 @@ def paper_backend(client, *, thinking="off", local=True, grammar=True, capture_m
         thinking_token_budget=PAPER_CONFIG["thinking_token_budget"] if thinking == "on" else None,
         capture_model_traces=capture_model_traces,
         strict_bundle_json=grammar,
+        model_profile=model_profile,
     )
     backend.reset()
     return backend
@@ -79,6 +84,7 @@ class ChatBackend:
         thinking_token_budget: int | None = None,
         capture_model_traces: bool = False,
         strict_bundle_json: bool = False,
+        model_profile: str = "auto",
     ):
         self.client = client
         self.max_output_tokens = max_output_tokens
@@ -88,7 +94,31 @@ class ChatBackend:
         self.thinking_token_budget = thinking_token_budget
         self.capture_model_traces = capture_model_traces
         self.strict_bundle_json = strict_bundle_json
+        self.model_profile = model_profile
         self.state = threading.local()
+
+    def configuration(self, model: str) -> dict[str, Any]:
+        """Resolved client controls and required server setup, not a server attestation."""
+        if self.thinking not in {"on", "off"}:
+            raise ValueError("thinking must be on or off")
+        if not self.is_local and self.thinking == "on":
+            raise ValueError("Hosted reasoning is not configured; --thinking on requires a local model profile")
+        profile = resolve_profile(model, self.model_profile, local=self.is_local)
+        return {
+            "model": model,
+            "model_profile": profile,
+            "thinking": self.thinking if profile else None,
+            "temperature": self.temperature,
+            "max_completion_tokens": self.max_output_tokens,
+            "extra_body": request_controls(profile, self.thinking, self.thinking_token_budget),
+            "output_mode": "grammar" if self.strict_bundle_json else "json_object",
+            "required_server": {
+                "reasoning_parser": profile["reasoning_parser"],
+                "reasoning_config": {k: profile[k] for k in ("reasoning_start_str", "reasoning_end_str")},
+            }
+            if profile
+            else None,
+        }
 
     def reset(self) -> None:
         self.state.calls = 0
@@ -117,6 +147,7 @@ class ChatBackend:
         response_format=None,
         timeout=None,
     ) -> str:
+        config = self.configuration(model)
         extra: dict[str, Any] = {
             "model": model,
             "messages": messages,
@@ -126,15 +157,8 @@ class ChatBackend:
         }
         if response_format:
             extra["response_format"] = response_format
-        if self.is_local and "qwen" in str(model).lower():
-            extra["extra_body"] = {
-                "chat_template_kwargs": {
-                    "enable_thinking": self.thinking == "on",
-                    "preserve_thinking": False,
-                }
-            }
-            if self.thinking == "on" and self.thinking_token_budget is not None:
-                extra["extra_body"]["thinking_token_budget"] = self.thinking_token_budget
+        if config["extra_body"]:
+            extra["extra_body"] = config["extra_body"]
         contract = None
         if self.strict_bundle_json:
             from .output_contract import VERSION, compiled_contract
@@ -166,6 +190,9 @@ class ChatBackend:
                 if self.capture_model_traces:
                     self.state.model_traces.append(
                         {
+                            "model": model,
+                            "model_profile": config["model_profile"]["name"] if config["model_profile"] else None,
+                            "thinking": config["thinking"],
                             "messages": messages,
                             "content": message.content,
                             "reasoning": reasoning,
@@ -179,13 +206,17 @@ class ChatBackend:
                     counter["reasoning_characters"] += len(reasoning)
                     counter["responses_with_reasoning"] += 1
                     self.state.usage = counter
-                if self.thinking == "on":
-                    if choice.finish_reason == "length":
+                profile = config["model_profile"]
+                if profile:
+                    if self.thinking == "on" and choice.finish_reason == "length":
                         raise ValueError("THINKING_OUTPUT_LIMIT: response exhausted max-output-tokens")
-                    if not message.content or "<think>" in message.content or "</think>" in message.content:
+                    markers = {"<think>", "</think>", profile["reasoning_start_str"], profile["reasoning_end_str"]}
+                    if not message.content or any(marker in message.content for marker in markers):
                         raise ValueError(
-                            "THINKING_PARSER_ERROR: expected final content separated by vLLM reasoning parser"
+                            f"THINKING_PARSER_ERROR: expected final content separated by {profile['reasoning_parser']}"
                         )
+                    if self.thinking == "off" and reasoning and reasoning.strip():
+                        raise ValueError("THINKING_MODE_MISMATCH: server returned reasoning despite --thinking off")
                 if contract:
                     from .output_contract import validate_contract
 
