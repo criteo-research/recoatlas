@@ -1,6 +1,7 @@
 """Pinned dataset files: where to download them and how to check them.
 
-Values are copied from recoatlas-v1's artifact_sources.json.
+Tool pins are copied from recoatlas-v1's artifact_sources.json. Query pins
+refer to the four-column releases (IDs, partitions, queries and positives).
 """
 
 from __future__ import annotations
@@ -12,10 +13,20 @@ from pathlib import Path
 QUERY_ENCODER = {"repo_id": "Qwen/Qwen3-Embedding-0.6B", "revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3"}
 
 SOURCES = {
+    "amazon-data": {
+        "repo_type": "dataset",
+        "repo_id": "iaouali/amazon-benchmark",
+        "revision": "ad5e6cb3138c8cf09b94ca8bbaadea00027b3980",
+    },
+    "amazon-tools": {
+        "repo_type": "model",
+        "repo_id": "iaouali/amazon-tools",
+        "revision": "1510aab8c62c329e6670e659230429abb496afb4",
+    },
     "hm-data": {
         "repo_type": "dataset",
         "repo_id": "iaouali/hm-benchmark",
-        "revision": "72f567a005a17822eed9e16709e36054df4ee01b",
+        "revision": "7ebe2e772916775198d770d00f2d3a6ff64b8800",
     },
     "hm-tools": {
         "repo_type": "model",
@@ -25,6 +36,60 @@ SOURCES = {
 }
 
 DATASETS = {
+    "amazon-musical-instruments": {
+        "catalog_items": 62961,
+        "splits": {"shared_train": 8937, "agent_dev": 2028, "agent_hidden": 1960},
+        "files": {
+            "product_texts": {
+                "source": "amazon-tools",
+                "path": "Musical_Instruments/data/product_texts.json",
+                "size": 29216932,
+                "sha256": "e875e343c29996c8b1d1120d033ad77fbfaca76d7cf2a6023573c90c2275c2fe",
+            },
+            "subcategories": {
+                "source": "amazon-tools",
+                "path": "Musical_Instruments/data/subcategories.json",
+                "size": 2805895,
+                "git_blob_sha1": "20fbe5ac5639fea3bb146883c272049c20bdc1e2",
+            },
+            "item_embeddings": {
+                "source": "amazon-tools",
+                "path": "Musical_Instruments/embeddings/item_embeddings_qwen.pt",
+                "size": 259148886,
+                "sha256": "f46aed409e66b59d8ddfdde2eaeb4cf276a7e6e71c7329033599d1f375241c97",
+            },
+            "comp_embeddings": {
+                "source": "amazon-tools",
+                "path": "Musical_Instruments/runs/shared-train-best-recipes-v1/embeddings/comp_embeddings_qwen.pt",
+                "size": 130206013,
+                "sha256": "848ec9f284ad9bfb0c236cfec90e1104e7b5e0c0e80a1b96b74ef315dfdba3eb",
+            },
+            "retrieval_model": {
+                "source": "amazon-tools",
+                "path": "Musical_Instruments/runs/shared-train-best-recipes-v1/models/recsys_model_qwen.pt",
+                "size": 242751975,
+                "sha256": "bce56bdce6684796832f1f0c20cf7b2acea2c1a6b7264798b704ff300d84c203",
+            },
+            "split/shared_train": {
+                "source": "amazon-data",
+                "path": "Musical_Instruments/shared_train.jsonl",
+                "size": 3241535,
+                "sha256": "0af30d87a34f2d5c28df9fd36c4f4d2276a049fa27d9d149ab3b32e98c005958",
+            },
+            "split/agent_dev": {
+                "source": "amazon-data",
+                "path": "Musical_Instruments/agent_dev.jsonl",
+                "size": 719667,
+                "sha256": "c71198f3b846e28a1c8a2dd7c558d41453ae6a921780de4fd49416d66c03cd37",
+            },
+            "split/agent_hidden": {
+                "source": "amazon-data",
+                "path": "Musical_Instruments/agent_hidden.jsonl",
+                "size": 716751,
+                "sha256": "66b85f6450a9777fba54451a2d53df9b1dbf3da4ae0b35ebb01f8585a1723437",
+            },
+        },
+    },
     "hm-clothing": {
         "catalog_items": 104993,
         "splits": {"shared_train": 9019, "agent_dev": 2028, "agent_hidden": 1960},
@@ -62,20 +127,20 @@ DATASETS = {
             "split/shared_train": {
                 "source": "hm-data",
                 "path": "H_and_M/shared_train.jsonl",
-                "size": 8509165,
-                "git_blob_sha1": "391b8b6bfd6751a6baf94a517ec0e2d1b427ec9a",
+                "size": 3107569,
+                "sha256": "1618811255fa38b85600e5858db33e5550771bf05ed4b4a5c4cb26eb35eae934",
             },
             "split/agent_dev": {
                 "source": "hm-data",
                 "path": "H_and_M/agent_dev.jsonl",
-                "size": 1895051,
-                "git_blob_sha1": "e7953d4e3744529576fdb9092f53f162fcd7f15b",
+                "size": 684225,
+                "sha256": "4f1274e93675aa5696f52e96b0119bade44719686f5bd26f88823677ee01ed33",
             },
             "split/agent_hidden": {
                 "source": "hm-data",
                 "path": "H_and_M/agent_hidden.jsonl",
-                "size": 1849884,
-                "git_blob_sha1": "d2a2d213401be881b2afe104c780da58a35c485a",
+                "size": 677037,
+                "sha256": "7c6d8a365c359e5546d8c6bbdef379526ef951795567a8e9d50b43d8e4816f29",
             },
         },
     },

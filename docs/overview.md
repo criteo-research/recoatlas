@@ -7,13 +7,20 @@ memory.
 ## Data
 
 Every file is downloaded from Hugging Face at a pinned revision and checked against a checksum. The
-pins come from the dataset's entry in recoatlas-v1's `artifact_sources.json`.
+tool pins come from the dataset's entry in recoatlas-v1's `artifact_sources.json`; query pins point
+to the four-column releases. IDs, partitions, query text and positive-item order were preserved.
 
 - **Requests:** [`iaouali/hm-benchmark`](https://huggingface.co/datasets/iaouali/hm-benchmark).
   - Splits: `shared_train` (9,019), `agent_dev` (2,028), `agent_hidden` (1,960).
   - Each request has a text query and 3–7 reference product IDs; K is their number.
+- **MI requests:** [`iaouali/amazon-benchmark`](https://huggingface.co/datasets/iaouali/amazon-benchmark),
+  `Musical_Instruments/`: 8,937 shared_train, 2,028 agent_dev and 1,960 agent_hidden rows.
+  These are the published artifact counts; the paper text's 9,019 shared_train count is not
+  silently substituted for the actual file count.
 - **Tools:** [`iaouali/hm-tools`](https://huggingface.co/iaouali/hm-tools): product texts,
   subcategories, product vectors, complementarity vectors, and a LoRA fine-tune for search.
+- **MI tools:** [`iaouali/amazon-tools`](https://huggingface.co/iaouali/amazon-tools),
+  `Musical_Instruments/`, with a catalog of 62,961 products.
 - **Query encoder:** `Qwen/Qwen3-Embedding-0.6B`, which turns search queries into vectors.
 
 ## Tool code
@@ -43,6 +50,8 @@ variant, under both transformers 4.57.1 and 5.19.
 | `backend.py`, `output_contract.py` | compatible inference transport, thinking settings, compact three-tool JSON grammar |
 | `model_profiles.py`, `configs/model_profiles.json` | model-specific chat-template controls and required reasoning parser/boundaries; no prompt edits |
 | `run_agent.py` | saved trajectories and post-report exact recovery; no judge calls |
+| `run_store.py` | locked, atomic compressed query checkpoints; strict resume identity and ordered JSONL export |
+| `sweep.py`, `configs/open_models.json` | pinned open-model sweep, local vLLM lifecycle, development gates, sharding and time limit |
 | `judge.py`, `prompts/direct_relevance.json` | blind whole-set direct-relevance judgments and saved attempts |
 | `batching.py` | `SearchBatcher`, used when `batch_search=True` |
 | `baselines.py` | v1's no-LLM baseline, plus `run_baseline(episode)` |
@@ -104,8 +113,9 @@ tools load or the client sends a request. `ChatBackend` forwards the profile's c
 controls together with the original compact grammar; the model messages are unchanged. Profiles
 share the paper configuration's temperature and output/thinking limits. Server parser/boundary
 requirements and provenance are stored with each run, not asserted as remotely verified settings.
-Qwen's original requests are preserved; the three additional profiles are documented compatibility
-interfaces, not recovered historical launch configurations. See the user guide for sources and
+Qwen's original requests are preserved. Public MI manifests identify all four model pins, context
+lengths, reasoning settings and the recorded serving build; remaining server arguments are explicit
+launcher choices. See the user guide for sources and
 serving setup. Mock request/response tests cover both thinking modes, alias handling, grammar
 coexistence, separate reasoning fields, rejected mode mismatches and CLI preflight. They do not
 replace testing the real models or verifying the server's budget enforcement.
@@ -207,17 +217,16 @@ as encoding one.
 
 ## Adding a dataset
 
-To add an Amazon dataset from the RecoAtlas release (e.g. Musical Instruments):
+To add another dataset from the RecoAtlas release:
 
-1. **Add the source repos.** Put `iaouali/amazon-benchmark` and `iaouali/amazon-tools`, with their
-   pinned revisions, in `SOURCES`.
+1. **Add any source repos not already registered,** with pinned revisions in `SOURCES`.
 2. **Add the dataset.** Put a `DATASETS` entry under the dataset's name, containing:
    - `catalog_items`;
    - `splits`: the published splits with their row counts;
    - `files`: the same file names as H&M's, each with its source, path, size and checksum.
 
    All values come from that dataset's entry in recoatlas-v1's `artifact_sources.json`.
-3. **Load it:** `recoatlas.load("amazon-musical-instruments")`.
+3. **Load it** with `recoatlas.load(...)`.
 
 Each dataset lists only the splits it publishes; Amazon Electronics, for example, only has
 `agent_hidden`.

@@ -9,7 +9,8 @@ this:
    polished casual summer outfit with a comfortable short-sleeved top, relaxed high-waisted shorts,
    and a statement waist accent to define the silhouette."* K is how many products it must
    recommend.
-2. **It searches a fixed catalog of 104,993 H&M products with three tools:**
+2. **It searches a fixed catalog with three tools:** 104,993 H&M clothing products or 62,961
+   Amazon Musical Instruments products.
    - `search_products(query, top_k)`: the `top_k` products closest to a text query;
    - `get_complementary_products(item_ids, top_k)`: products that complement the given products,
      from other subcategories (learned from co-purchases in the default "utility" tools);
@@ -48,6 +49,7 @@ uv sync --extra tools
 import recoatlas
 
 env = recoatlas.load("hm-clothing", device="cuda")  # or device="cpu"
+# Or: recoatlas.load("amazon-musical-instruments", device="cuda")
 ```
 
 - **First call:** downloads about 2.8 GB into the Hugging Face cache and checks every file.
@@ -200,11 +202,116 @@ the [Nemotron model card](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Ligh
 and the [GLM model card](https://huggingface.co/zai-org/GLM-4.7-Flash) and
 [chat template](https://huggingface.co/zai-org/GLM-4.7-Flash/blob/main/chat_template.jinja).
 Budgeting uses [vLLM's thinking-budget interface](https://docs.vllm.ai/en/latest/features/reasoning_outputs/#thinking-budget-control).
-The original non-Qwen paper launch configurations/revision pins were not recovered and these
-profiles have not been live-inference validated. They provide compatibility, not evidence of
-exact reproduction of the published figure. Keep the checkpoint/tokenizer revisions, vLLM
-version, launch arguments and server sampling defaults with your run; these are not discovered
-or verified by the client.
+The published MI manifests identify all four checkpoint revisions, 65,536-token contexts and
+the recorded vLLM build; these pins are in `configs/open_models.json`. Not every historical server
+argument was recorded. The profiles have not been live-inference validated in this package.
+They provide compatibility, not evidence of exact reproduction of the published figure. Keep
+checkpoint/tokenizer revisions, vLLM version, launch arguments and server sampling defaults with
+your run; a standalone `recoatlas-agent` client does not discover or verify those settings.
+
+### Overnight open-model sweep
+
+`scripts/run_open_models.sh` runs Qwen3.8-27B-FP8, Gemma 4 31B IT, Nemotron 3.5 Lightning
+30B-A3B BF16 and GLM-4.7-Flash BF16. Each runs with thinking **off and on**, on **MI and H&M**:
+16 arms, 1,960 hidden queries each, 31,360 evaluated episodes in total. This is fresh inference,
+not replaying old predictions. No RL training, GPT baseline, LLM judge, HF upload or Git push runs.
+
+**Where to run it:** on a Linux GPU host already allocated to you, with H200/B200 GPUs visible
+to the process. This script does not allocate Ray clusters or attach GPUs to your login machine.
+GPU capacity in a queue is not an allocation. A Ray job must run this command on a GPU worker,
+not its CPU-only driver. Use a persistent mounted directory for results on preemptable workers;
+node-local output will not survive loss of that node. The script does not copy to HDFS.
+
+1. Install the client in the checkout:
+
+   ```bash
+   uv sync --frozen --extra agent --extra grammar
+   ```
+
+2. Install the serving environment separately, on the GPU host. Python 3.12 and an NVIDIA driver
+   compatible with the installed CUDA/PyTorch build are needed. The exact recorded vLLM wheel
+   is available from its full-commit index:
+
+   ```bash
+   uv venv --python 3.12 .venv-serving
+   uv pip install --python .venv-serving/bin/python \
+     --extra-index-url https://wheels.vllm.ai/8263ea12bd8fa7584277f5200d521193259707b7 \
+     'vllm==0.29.1rc1.dev134+g8263ea12b' 'transformers==5.17.0' 'xgrammar==0.2.6' ninja
+   ```
+
+   The launcher refuses a different vLLM version and records the serving package versions.
+   It starts authenticated **loopback-only** servers using temporary local keys. No paid API key
+   is needed. All pinned model and tool repositories are public; HF write tokens are not passed
+   to child processes. Downloads still need network access.
+
+3. Inspect the plan; this does not start models or download artifacts:
+
+   ```bash
+   bash scripts/run_open_models.sh --dry-run --gpu-groups 0 1 2 3,4 \
+     --server-python "$PWD/.venv-serving/bin/python"
+   ```
+
+   Here GPUs 0, 1 and 2 serve Qwen, Gemma and Nemotron respectively; GPUs 3 and 4 serve GLM
+   with tensor parallelism 2. Groups must be disjoint and on the **same host**. Use the physical
+   IDs/UUIDs in your allocation's `CUDA_VISIBLE_DEVICES`, not renumbered indices. With only two
+   allocated GPUs, use `--gpu-groups 0,1`: models then run sequentially. The script never uses
+   GPUs outside the groups you supply. Allocate enough local scratch for all four checkpoints,
+   tool files and compilation caches; allow roughly 300 GB plus room for the traces.
+
+4. On that GPU host, run the full sweep in `tmux`, `screen`, or your batch scheduler:
+
+   ```bash
+   bash scripts/run_open_models.sh \
+     --server-python "$PWD/.venv-serving/bin/python" \
+     --gpu-groups 0 1 2 3,4 --concurrency 8 \
+     --output /path/to/persistent/open-models-mi-hm \
+     --scratch /path/to/large-local-disk/recoatlas-cache \
+     --max-hours 14
+   ```
+
+   Replace both example paths. Each model first runs the first development query of each size
+   K=3–7 on both datasets in both modes (20 smoke episodes per model). A failed smoke, invalid
+   report, thinking-off reasoning, or no observed thinking-on reasoning
+   blocks hidden evaluation **for that model**. Other models continue. `--smoke-only` stops after
+   these development checks. Smoke gates never use recovery scores to select configurations.
+   They check transport and behavior; a sample cannot prove budget enforcement for every request.
+   Missed prompted tool minima after budget exhaustion are recorded, not smoke failures: this
+   preserves the original paper agent's behavior rather than filtering its policy outcomes.
+
+   The frozen agent, six-round budget, three tools, parser, output limits and temperature remain
+   unchanged. Recommendation tools use CUDA in float32 with search batching disabled. The
+   concurrency default is 8 per server; the historical manifests recorded 32. Context is 65,536,
+   thinking budget 4,096, and output limits 1,000 (off) / 16,384 (on). Single-GPU serving except GLM,
+   0.85 memory fraction and server seed 0 are explicit launcher settings, not claims that every
+   historical launch argument was recovered. Different hardware/sampling may give different scores.
+
+5. Inspect `OUTPUT/shard-0-of-1/summary.json`. Each model directory contains `server.log`,
+   `runtime.json`, `status.json`, and `smoke/` and `hidden/` subdirectories. Under each dataset:
+   - `thinking-on.jsonl` / `thinking-off.jsonl`: reports and traces in dataset order;
+   - `*.summary.json`: completion counts, pending queries, provenance and mean SetHit;
+   - `*.jsonl.state/`: compressed, atomic per-query checkpoints; **keep these for resume**;
+   - `*.log`: progress and errors from that arm.
+
+   Per-query checkpoints are saved immediately. JSONL exports are assembled at arm completion;
+   after a hard interruption, resume reconstructs them. Scores include failed queries as zero;
+   an incomplete arm's mean is `null`, not a partial result labeled as a full benchmark. The
+   sweep exits nonzero for failures or interruption. On its time limit or Ctrl-C it stops only
+   the child processes it started; it does not destroy your cluster or release its reservation.
+
+6. To continue, repeat the same command with `--resume`. Code, configuration, selected rows,
+   revisions and runtime must match. Already recorded successes **and errors** are preserved;
+   only missing IDs run. A failed development check is not retried until it passes by chance:
+   investigate it and use a separate new output for a deliberate new run. You can first use
+   `--smoke-only`, inspect it, then use `--resume` without `--smoke-only` for the full evaluation.
+
+For multiple allocated hosts, run the same script on each with a shared `--num-shards N` and a
+different `--shard-index` from 0 to N−1. Rows are assigned by their fixed split position modulo N,
+identically in both modes. Each host still runs all four models and needs a two-GPU group for GLM.
+Keep every `shard-I-of-N` output directory. Shard summaries are not full-benchmark scores: combine
+all N disjoint shards and weight by their query counts, not an unweighted mean of shard means.
+This is explicit sharding, not automatic Ray provisioning or a claim to use all free cluster GPUs.
+Use `--models qwen` (or `gemma4`, `nemotron`, `glm4_7`) for a model-specific replica. Then only
+that model's GPU group is required; use the same shard count across all replicas of that model.
 
 ### Hosted endpoints and saved results
 
@@ -216,8 +323,9 @@ The frozen strategy and task contract stay fixed.
 Each run writes reports, tool traces, model calls, protocol counts and post-report SetHit to JSONL,
 plus a `.summary.json` containing the resolved model profile, client controls and required server
 settings. The Qwen revision is not attributed to other models. Failed queries stay in the denominator
-with zero SetHit. Existing files
-are never overwritten. `--limit` results are subset results, not full-benchmark results.
+with zero SetHit. Existing output requires explicit `--resume`; configuration mismatches are
+rejected. `--concurrency` runs independent agents over shared, unbatched tools. `--limit` results
+are subset results, not full-benchmark results.
 
 The Python entry point is `Agent(env, backend).run(request, k)`; there is only one agent
 implementation. Six decision rounds, two distinct searches and one complementarity call are

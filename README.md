@@ -3,7 +3,8 @@
 RecoAtlas, a benchmark and RL environment for LLM recommendation agents, as a Python package. An
 agent gets a shopping request and a number K, uses three tools on a fixed product catalog (search,
 complementary products, near-duplicate removal), and submits K products. The report is scored
-against the request's reference items, taken from one real customer's purchases. H&M only for now.
+against the request's reference items, taken from one real customer's purchases. Includes Amazon
+Musical Instruments and H&M Clothing.
 
 - **New here?** [ELI5.md](ELI5.md): what it is and how to use it, step by step.
 - **How it works,** the design choices, and measured speed and memory:
@@ -17,6 +18,11 @@ The separate [direct-relevance judge](src/recoatlas/judge.py) evaluates complete
 Local model profiles configure thinking on/off for Qwen, Gemma 4, Nemotron 3.5 Lightning and
 GLM-4.7-Flash without changing the agent. See [model setup and validation](ELI5.md#choose-the-agent-model)
 for serving requirements and the distinction between compatibility and paper-run reproduction.
+
+For the four open models on both datasets, thinking on and off, use
+[`scripts/run_open_models.sh`](scripts/run_open_models.sh). It starts local model servers,
+checks development queries, and saves resumable results. See the
+[overnight setup](ELI5.md#overnight-open-model-sweep) before running it on an allocated GPU host.
 
 ## Install
 

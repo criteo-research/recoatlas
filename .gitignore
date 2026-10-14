@@ -1,4 +1,5 @@
 .venv/
+.venv-serving/
 __pycache__/
 *.pyc
 .pytest_cache/
@@ -6,3 +7,7 @@ __pycache__/
 dist/
 *.egg-info/
 trl-out/
+runs/
+.env
+.env.*
+!.env.example

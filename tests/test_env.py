@@ -1,4 +1,4 @@
-"""Tests on the real H&M environment (downloads ~2.8 GB once). Run with: uv run pytest -m slow"""
+"""Tests on the pinned MI/H&M environments. Run with: uv run pytest -m slow"""
 
 import asyncio
 import json
@@ -8,13 +8,13 @@ import pytest
 pytestmark = pytest.mark.slow
 
 
-@pytest.fixture(scope="module")
-def env():
+@pytest.fixture(scope="module", params=["hm-clothing", "amazon-musical-instruments"])
+def env(request):
     import torch
 
     import recoatlas
 
-    return recoatlas.load("hm-clothing", device="cuda" if torch.cuda.is_available() else "cpu")
+    return recoatlas.load(request.param, device="cuda" if torch.cuda.is_available() else "cpu")
 
 
 def test_requested_tool_count_is_preserved(env):

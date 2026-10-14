@@ -72,8 +72,9 @@ RECOATLAS_DEVICE=cuda uv run recoatlas-openenv --port 8000
 - **Model transport:** `model_profiles.py` and `configs/model_profiles.json` hold local serving
   controls. Never rewrite the frozen agent prompt to toggle thinking. Unknown models require an
   explicit compatible profile; hosted reasoning is provider-managed, not labeled thinking-off.
-  Preserve Qwen request parity. Other profiles are documented interfaces, not evidence of recovered
-  paper launch settings; do not claim live validation based on mocked tests.
+  Preserve Qwen request parity. Public MI manifests now pin all four model revisions, context and
+  serving build in `configs/open_models.json`; not every historical server argument is recovered.
+  Do not claim live validation based on mocked tests.
 - **Settings:** the `Settings` dataclass.
   - `Settings.from_environ()` reads `RECOATLAS_<FIELD>` for every field. Booleans are `"1"`/`"0"`,
     and `"none"` means `None` for numbers.
@@ -83,6 +84,9 @@ RECOATLAS_DEVICE=cuda uv run recoatlas-openenv --port 8000
   - Nothing else may be dataset-specific.
   - `catalog_items` and the split row counts are checked at load.
   - Datasets with fewer splits (Amazon Electronics only has `agent_hidden`) list only those.
+- **Overnight inference:** `sweep.py` starts local serving processes on explicitly allocated GPU
+  groups, not clusters. `run_store.py` binds resume to code/configuration/data/runtime. Both saved
+  successes and errors are final observations; never retry queries based on their scores.
 
 ## Adapter contracts (verified against the libraries' source)
 

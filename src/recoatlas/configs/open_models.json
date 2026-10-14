@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "datasets": ["amazon-musical-instruments", "hm-clothing"],
+  "thinking": ["off", "on"],
+  "server": {
+    "vllm_version": "0.29.1rc1.dev134+g8263ea12b",
+    "max_model_len": 65536,
+    "gpu_memory_utilization": 0.85,
+    "max_num_seqs": 32,
+    "generation_config": "auto",
+    "seed": 0
+  },
+  "models": {
+    "qwen": {
+      "model": "Qwen/Qwen3.8-27B-FP8",
+      "revision": "017b9c7af6b5689d5dd426a76e0bc077eb5ca20a",
+      "profile": "qwen",
+      "dtype": "auto",
+      "tensor_parallel_size": 1
+    },
+    "gemma4": {
+      "model": "google/gemma-4-31B-it",
+      "revision": "842da3794eaa0b77d5f08bae87a17459d91ff475",
+      "profile": "gemma4",
+      "dtype": "bfloat16",
+      "tensor_parallel_size": 1
+    },
+    "nemotron": {
+      "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16",
+      "revision": "a9904d24bcc1d289a1950fa9d2b978c47cf903b9",
+      "profile": "nemotron",
+      "dtype": "bfloat16",
+      "tensor_parallel_size": 1
+    },
+    "glm4_7": {
+      "model": "zai-org/GLM-4.7-Flash",
+      "revision": "7dd20894a642a0aa287e9827cb1a1f7f91386b67",
+      "profile": "glm4_7",
+      "dtype": "bfloat16",
+      "tensor_parallel_size": 2
+    }
+  },
+  "provenance": {
+    "repo_id": "iaouali/amazon-benchmark",
+    "revision": "ad5e6cb3138c8cf09b94ca8bbaadea00027b3980",
+    "manifests": [
+      "Musical_Instruments/results/h200-qwen-hidden-three-tools-v1/manifest.json",
+      "Musical_Instruments/results/h200-crosslab-hidden-three-tools-v1/manifest.json",
+      "Musical_Instruments/results/h200-glm47-hidden-three-tools-v1/manifest.json"
+    ],
+    "recovered": ["model revisions", "context length", "thinking/output limits", "GLM TP2", "vLLM version from runtime.json"],
+    "launcher_choices": ["8 concurrent episodes by default, not the historical 32", "0.85 GPU memory fraction", "vLLM seed 0", "single-GPU serving except GLM"]
+  }
+}

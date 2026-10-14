@@ -27,7 +27,7 @@ recoatlas-judge = "recoatlas.judge:main"
 dev = ["pytest>=8", "ruff>=0.6"]
 
 [tool.pytest.ini_options]
-markers = ["slow: needs the real H&M files (~2.8 GB download)"]
+markers = ["slow: needs the real MI and H&M artifacts (downloaded once)"]
 addopts = "-m 'not slow'"
 
 [tool.ruff]
