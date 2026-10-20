@@ -6,21 +6,19 @@ memory.
 
 ## Data
 
-Every file is downloaded from Hugging Face at a pinned revision and checked against a checksum. The
-tool pins come from the dataset's entry in recoatlas-v1's `artifact_sources.json`; query pins point
-to the four-column releases. IDs, partitions, query text and positive-item order were preserved.
+Every file is downloaded from the unified
+[`iaouali/recoatlas`](https://huggingface.co/datasets/iaouali/recoatlas) repository at one pinned
+revision and checked against a SHA-256 checksum. Query IDs, partitions, text, reference order and
+the five frozen serving artifacts per environment are preserved from the audited source releases.
 
-- **Requests:** [`iaouali/hm-benchmark`](https://huggingface.co/datasets/iaouali/hm-benchmark).
-  - Splits: `shared_train` (9,019), `agent_dev` (2,028), `agent_hidden` (1,960).
-  - Each request has a text query and 3–7 reference product IDs; K is their number.
-- **MI requests:** [`iaouali/amazon-benchmark`](https://huggingface.co/datasets/iaouali/amazon-benchmark),
-  `Musical_Instruments/`: 8,937 shared_train, 2,028 agent_dev and 1,960 agent_hidden rows.
-  These are the published artifact counts; the paper text's 9,019 shared_train count is not
-  silently substituted for the actual file count.
-- **Tools:** [`iaouali/hm-tools`](https://huggingface.co/iaouali/hm-tools): product texts,
-  subcategories, product vectors, complementarity vectors, and a LoRA fine-tune for search.
-- **MI tools:** [`iaouali/amazon-tools`](https://huggingface.co/iaouali/amazon-tools),
-  `Musical_Instruments/`, with a catalog of 62,961 products.
+- **H&M Clothing:** 104,993 products; `shared_train` (9,019), `agent_dev` (2,028), and
+  `agent_hidden` (1,960). Each request has a text query and 3–7 reference product IDs; K is their
+  number.
+- **Amazon Musical Instruments:** 62,961 products; `shared_train` (8,937), `agent_dev` (2,028),
+  and `agent_hidden` (1,960). The published training file has 8,937 rows: 9,019 were generated and
+  82 were removed by the final overlap filter.
+- **Tools in each environment:** product texts, subcategories, product vectors, complementarity
+  vectors, and the learned query-side retrieval checkpoint.
 - **Query encoder:** `Qwen/Qwen3-Embedding-0.6B`, which turns search queries into vectors.
 
 ## Tool code

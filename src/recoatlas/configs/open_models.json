@@ -41,12 +41,10 @@
     }
   },
   "provenance": {
-    "repo_id": "iaouali/amazon-benchmark",
-    "revision": "ad5e6cb3138c8cf09b94ca8bbaadea00027b3980",
+    "repo_id": "iaouali/recoatlas",
+    "revision": "5c9cb379ecaecb16161fc9947fb68d70fdc8fd25",
     "manifests": [
-      "Musical_Instruments/results/h200-qwen-hidden-three-tools-v1/manifest.json",
-      "Musical_Instruments/results/h200-crosslab-hidden-three-tools-v1/manifest.json",
-      "Musical_Instruments/results/h200-glm47-hidden-three-tools-v1/manifest.json"
+      "amazon-musical-instruments/benchmark/leaderboard/manifest.json"
     ],
     "recovered": ["model revisions", "context length", "thinking/output limits", "GLM TP2", "vLLM version from runtime.json"],
     "launcher_choices": ["8 concurrent episodes by default, not the historical 32", "0.85 GPU memory fraction", "vLLM seed 0", "single-GPU serving except GLM"]

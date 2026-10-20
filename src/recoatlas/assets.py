@@ -1,8 +1,4 @@
-"""Pinned dataset files: where to download them and how to check them.
-
-Tool pins are copied from recoatlas-v1's artifact_sources.json. Query pins
-refer to the four-column releases (IDs, partitions, queries and positives).
-"""
+"""Pinned RecoAtlas release files: where to download and how to check them."""
 
 from __future__ import annotations
 
@@ -13,25 +9,10 @@ from pathlib import Path
 QUERY_ENCODER = {"repo_id": "Qwen/Qwen3-Embedding-0.6B", "revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3"}
 
 SOURCES = {
-    "amazon-data": {
+    "recoatlas": {
         "repo_type": "dataset",
-        "repo_id": "iaouali/amazon-benchmark",
-        "revision": "2d4a9a53629e79b1521353416f33b1cd783c1e83",
-    },
-    "amazon-tools": {
-        "repo_type": "model",
-        "repo_id": "iaouali/amazon-tools",
-        "revision": "4fc5b15b9351fe01af883bf32725c96073ac3b5b",
-    },
-    "hm-data": {
-        "repo_type": "dataset",
-        "repo_id": "iaouali/hm-benchmark",
-        "revision": "191777239ffe4de0f7a4bbbef826a360aed84ca3",
-    },
-    "hm-tools": {
-        "repo_type": "model",
-        "repo_id": "iaouali/hm-tools",
-        "revision": "734f17af96bc63a391a7676ce291a23053ab21cb",
+        "repo_id": "iaouali/recoatlas",
+        "revision": "5c9cb379ecaecb16161fc9947fb68d70fdc8fd25",
     },
 }
 
@@ -41,50 +22,50 @@ DATASETS = {
         "splits": {"shared_train": 8937, "agent_dev": 2028, "agent_hidden": 1960},
         "files": {
             "product_texts": {
-                "source": "amazon-tools",
-                "path": "Musical_Instruments/data/product_texts.json",
+                "source": "recoatlas",
+                "path": "amazon-musical-instruments/tools/catalog/product_texts.json",
                 "size": 29216932,
                 "sha256": "e875e343c29996c8b1d1120d033ad77fbfaca76d7cf2a6023573c90c2275c2fe",
             },
             "subcategories": {
-                "source": "amazon-tools",
-                "path": "Musical_Instruments/data/subcategories.json",
+                "source": "recoatlas",
+                "path": "amazon-musical-instruments/tools/catalog/subcategories.json",
                 "size": 2805895,
-                "git_blob_sha1": "20fbe5ac5639fea3bb146883c272049c20bdc1e2",
+                "sha256": "cef77990a943053eb8695603847cf5250faa1fabeac0201d12ee292f0121498f",
             },
             "item_embeddings": {
-                "source": "amazon-tools",
-                "path": "Musical_Instruments/embeddings/item_embeddings_qwen.pt",
+                "source": "recoatlas",
+                "path": "amazon-musical-instruments/tools/embeddings/item_embeddings.pt",
                 "size": 259148886,
                 "sha256": "f46aed409e66b59d8ddfdde2eaeb4cf276a7e6e71c7329033599d1f375241c97",
             },
             "comp_embeddings": {
-                "source": "amazon-tools",
-                "path": "Musical_Instruments/embeddings/complementarity_embeddings_qwen.pt",
+                "source": "recoatlas",
+                "path": "amazon-musical-instruments/tools/embeddings/complementarity_embeddings.pt",
                 "size": 130206013,
                 "sha256": "848ec9f284ad9bfb0c236cfec90e1104e7b5e0c0e80a1b96b74ef315dfdba3eb",
             },
             "retrieval_model": {
-                "source": "amazon-tools",
-                "path": "Musical_Instruments/models/retrieval_model_qwen.pt",
+                "source": "recoatlas",
+                "path": "amazon-musical-instruments/tools/retrieval/retrieval_model.pt",
                 "size": 242751975,
                 "sha256": "bce56bdce6684796832f1f0c20cf7b2acea2c1a6b7264798b704ff300d84c203",
             },
             "split/shared_train": {
-                "source": "amazon-data",
-                "path": "Musical_Instruments/shared_train.jsonl",
+                "source": "recoatlas",
+                "path": "amazon-musical-instruments/data/shared_train.jsonl",
                 "size": 3241535,
                 "sha256": "0af30d87a34f2d5c28df9fd36c4f4d2276a049fa27d9d149ab3b32e98c005958",
             },
             "split/agent_dev": {
-                "source": "amazon-data",
-                "path": "Musical_Instruments/agent_dev.jsonl",
+                "source": "recoatlas",
+                "path": "amazon-musical-instruments/data/agent_dev.jsonl",
                 "size": 719667,
                 "sha256": "c71198f3b846e28a1c8a2dd7c558d41453ae6a921780de4fd49416d66c03cd37",
             },
             "split/agent_hidden": {
-                "source": "amazon-data",
-                "path": "Musical_Instruments/agent_hidden.jsonl",
+                "source": "recoatlas",
+                "path": "amazon-musical-instruments/data/agent_hidden.jsonl",
                 "size": 716751,
                 "sha256": "66b85f6450a9777fba54451a2d53df9b1dbf3da4ae0b35ebb01f8585a1723437",
             },
@@ -95,50 +76,50 @@ DATASETS = {
         "splits": {"shared_train": 9019, "agent_dev": 2028, "agent_hidden": 1960},
         "files": {
             "product_texts": {
-                "source": "hm-tools",
-                "path": "H_and_M/data/product_texts.json",
+                "source": "recoatlas",
+                "path": "hm-clothing/tools/catalog/product_texts.json",
                 "size": 32847643,
                 "sha256": "1c248afcf181c2a593f560fa820fdecdce3c894f1d53ce485f37bff75a1e9290",
             },
             "subcategories": {
-                "source": "hm-tools",
-                "path": "H_and_M/data/subcategories.json",
+                "source": "recoatlas",
+                "path": "hm-clothing/tools/catalog/subcategories.json",
                 "size": 5203714,
-                "git_blob_sha1": "1f47cad854a0556b23bdb8d1b88df14dc599e535",
+                "sha256": "4deb7132bf7cd7d27acb8a4d7e1db47f0c85e05085f7027f36f36f5e510f1b63",
             },
             "item_embeddings": {
-                "source": "hm-tools",
-                "path": "H_and_M/embeddings/item_embeddings_qwen.pt",
+                "source": "recoatlas",
+                "path": "hm-clothing/tools/embeddings/item_embeddings.pt",
                 "size": 432152712,
                 "sha256": "f17d1ea911f9a3590c596c17ce4d59ff31d5d7a31f68c116252301c0fcce58c1",
             },
             "comp_embeddings": {
-                "source": "hm-tools",
-                "path": "H_and_M/embeddings/complementarity_embeddings_qwen.pt",
+                "source": "recoatlas",
+                "path": "hm-clothing/tools/embeddings/complementarity_embeddings.pt",
                 "size": 862204045,
                 "sha256": "75fbbcd329df7cba5aa842f93aeb888f73202ae7efadec7d46616c0884beec55",
             },
             "retrieval_model": {
-                "source": "hm-tools",
-                "path": "H_and_M/models/retrieval_model_qwen.pt",
+                "source": "recoatlas",
+                "path": "hm-clothing/tools/retrieval/retrieval_model.pt",
                 "size": 242748315,
                 "sha256": "78615ce6995d01cbf4947fdde4944408cd1889db1f799245c717417107bcf645",
             },
             "split/shared_train": {
-                "source": "hm-data",
-                "path": "H_and_M/shared_train.jsonl",
+                "source": "recoatlas",
+                "path": "hm-clothing/data/shared_train.jsonl",
                 "size": 3107569,
                 "sha256": "1618811255fa38b85600e5858db33e5550771bf05ed4b4a5c4cb26eb35eae934",
             },
             "split/agent_dev": {
-                "source": "hm-data",
-                "path": "H_and_M/agent_dev.jsonl",
+                "source": "recoatlas",
+                "path": "hm-clothing/data/agent_dev.jsonl",
                 "size": 684225,
                 "sha256": "4f1274e93675aa5696f52e96b0119bade44719686f5bd26f88823677ee01ed33",
             },
             "split/agent_hidden": {
-                "source": "hm-data",
-                "path": "H_and_M/agent_hidden.jsonl",
+                "source": "recoatlas",
+                "path": "hm-clothing/data/agent_hidden.jsonl",
                 "size": 677037,
                 "sha256": "7c6d8a365c359e5546d8c6bbdef379526ef951795567a8e9d50b43d8e4816f29",
             },
