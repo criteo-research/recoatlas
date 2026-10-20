@@ -111,9 +111,9 @@ tools load or the client sends a request. `ChatBackend` forwards the profile's c
 controls together with the original compact grammar; the model messages are unchanged. Profiles
 share the paper configuration's temperature and output/thinking limits. Server parser/boundary
 requirements and provenance are stored with each run, not asserted as remotely verified settings.
-Qwen's original requests are preserved. Public MI manifests identify all four model pins, context
-lengths, reasoning settings and the recorded serving build; remaining server arguments are explicit
-launcher choices. See the user guide for sources and
+Qwen's original requests are preserved. `configs/open_models.json` identifies all four model pins,
+context lengths, reasoning settings and the recorded serving build; remaining server arguments are
+explicit launcher choices. See the user guide for sources and
 serving setup. Mock request/response tests cover both thinking modes, alias handling, grammar
 coexistence, separate reasoning fields, rejected mode mismatches and CLI preflight. They do not
 replace testing the real models or verifying the server's budget enforcement.

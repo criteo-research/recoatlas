@@ -12,7 +12,7 @@ SOURCES = {
     "recoatlas": {
         "repo_type": "dataset",
         "repo_id": "iaouali/recoatlas",
-        "revision": "5c9cb379ecaecb16161fc9947fb68d70fdc8fd25",
+        "revision": "b51cd17c074e97b6ef6a598660c1450e2db71ef3",
     },
 }
 

@@ -72,8 +72,8 @@ RECOATLAS_DEVICE=cuda uv run recoatlas-openenv --port 8000
 - **Model transport:** `model_profiles.py` and `configs/model_profiles.json` hold local serving
   controls. Never rewrite the frozen agent prompt to toggle thinking. Unknown models require an
   explicit compatible profile; hosted reasoning is provider-managed, not labeled thinking-off.
-  Preserve Qwen request parity. Public MI manifests now pin all four model revisions, context and
-  serving build in `configs/open_models.json`; not every historical server argument is recovered.
+  Preserve Qwen request parity. `configs/open_models.json` pins all four model revisions, context
+  and serving build; not every historical server argument is recovered.
   Do not claim live validation based on mocked tests.
 - **Settings:** the `Settings` dataclass.
   - `Settings.from_environ()` reads `RECOATLAS_<FIELD>` for every field. Booleans are `"1"`/`"0"`,

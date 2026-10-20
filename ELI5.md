@@ -202,8 +202,8 @@ the [Nemotron model card](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Ligh
 and the [GLM model card](https://huggingface.co/zai-org/GLM-4.7-Flash) and
 [chat template](https://huggingface.co/zai-org/GLM-4.7-Flash/blob/main/chat_template.jinja).
 Budgeting uses [vLLM's thinking-budget interface](https://docs.vllm.ai/en/latest/features/reasoning_outputs/#thinking-budget-control).
-The published MI manifests identify all four checkpoint revisions, 65,536-token contexts and
-the recorded vLLM build; these pins are in `configs/open_models.json`. Not every historical server
+The packaged `configs/open_models.json` identifies all four checkpoint revisions, 65,536-token
+contexts and the recorded vLLM build. Not every historical server
 argument was recorded. The profiles have not been live-inference validated in this package.
 They provide compatibility, not evidence of exact reproduction of the published figure. Keep
 checkpoint/tokenizer revisions, vLLM version, launch arguments and server sampling defaults with
