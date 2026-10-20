@@ -70,3 +70,9 @@ The Miles example requires a checkout containing `examples/recoatlas/`, not the 
 uv run pytest -q            # fast tests
 uv run pytest -q -m slow    # against the real H&M files
 ```
+
+## License
+
+RecoAtlas code is released under the [Apache License 2.0](LICENSE). Downloaded datasets, catalog
+content, base models, and derived tool artifacts remain subject to the terms identified in their
+respective Hugging Face repositories; the code license does not relicense third-party material.

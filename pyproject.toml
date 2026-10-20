@@ -3,6 +3,8 @@ name = "recoatlas"
 version = "0.1.0"
 description = "RecoAtlas: a recommendation environment for LLM agents"
 readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 requires-python = ">=3.11"
 dependencies = ["huggingface-hub>=0.34"]
 
@@ -29,6 +31,7 @@ dev = ["pytest>=8", "ruff>=0.6"]
 [tool.pytest.ini_options]
 markers = ["slow: needs the real MI and H&M artifacts (downloaded once)"]
 addopts = "-m 'not slow'"
+testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 120

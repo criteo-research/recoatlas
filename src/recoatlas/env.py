@@ -81,14 +81,18 @@ class Env:
     episodes at once. Use `episode()` for one request with record-keeping.
     """
 
-    def __init__(self, dataset: str = "hm-clothing", **settings):
+    def __init__(self, dataset: str = "hm-clothing", *, splits: Sequence[str] | None = None, **settings):
         if dataset not in assets.DATASETS:
             raise ValueError(f"Unknown dataset {dataset!r}; available: {sorted(assets.DATASETS)}")
         self.dataset = dataset
         self.settings = Settings(**settings)
-        self.splits: dict[str, list[dict]] = {
-            s: assets.load_split(dataset, s) for s in assets.DATASETS[dataset]["splits"]
-        }
+        selected_splits = tuple(assets.DATASETS[dataset]["splits"] if splits is None else splits)
+        if isinstance(splits, str) or len(set(selected_splits)) != len(selected_splits):
+            raise ValueError("splits must be a sequence of distinct split names")
+        if unknown := set(selected_splits) - assets.DATASETS[dataset]["splits"].keys():
+            raise ValueError(f"Unknown splits for {dataset}: {sorted(unknown)}")
+        # Trainers can load tools without ever downloading evaluation references.
+        self.splits: dict[str, list[dict]] = {s: assets.load_split(dataset, s) for s in selected_splits}
         self._by_id = {split: {row["candidate_id"]: row for row in rows} for split, rows in self.splits.items()}
         self._load_tools()
 

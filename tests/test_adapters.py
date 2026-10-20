@@ -51,6 +51,34 @@ def test_miles_reward_uses_shared_parser_and_ordered_seen_ids():
     assert result == {"reward": 1 / 3, "metrics": {"sethit": 1 / 3, "validity": 1}}
 
 
+def test_miles_preparation_is_label_free_and_backfills_before_validity():
+    service = MilesToolService(FakeEnv())
+    response = asyncio.run(service.prepare_report(
+        {"results": [{"product_id": "i2"}, {"product_id": "i2"}, {"product_id": "unknown"}]},
+        3, ["i2", "i4", "i5", "i0"],
+    ))
+    assert response["valid"]
+    assert [item["product_id"] for item in response["report"]["results"]] == ["i2", "i4", "i5"]
+    assert set(response) == {"valid", "errors", "report"}
+    failed = asyncio.run(service.prepare_report({"results": [{"item_id": "i2"}]}, 3, ["i2", "i4", "i5"]))
+    assert not failed["valid"] and failed["report"] is None
+
+
+def test_env_can_load_only_development_or_no_queries(monkeypatch):
+    from recoatlas import assets
+    from recoatlas.env import Env
+
+    downloaded = []
+    monkeypatch.setattr(assets, "load_split", lambda dataset, split: downloaded.append(split) or [])
+    monkeypatch.setattr(Env, "_load_tools", lambda self: None)
+    assert list(Env("amazon-musical-instruments", splits=("agent_dev",)).splits) == ["agent_dev"]
+    assert downloaded == ["agent_dev"]
+    assert Env("amazon-musical-instruments", splits=()).splits == {}
+    assert downloaded == ["agent_dev"]
+    with pytest.raises(ValueError, match="Unknown splits"):
+        Env("amazon-musical-instruments", splits=("typo",))
+
+
 @pytest.mark.parametrize("k", [3, 5, 7])
 def test_baseline_requests_paper_candidate_count(k):
     env = FakeEnv()

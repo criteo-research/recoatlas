@@ -17,6 +17,8 @@ from collections.abc import Callable
 from typing import Any
 
 from .env import DISCOVERY_TOOLS, Env, shared_env
+from .reports import prepare_report
+from .scoring import validation_errors
 
 
 class MilesToolService:
@@ -24,6 +26,29 @@ class MilesToolService:
 
     def __init__(self, env: Env | None = None):
         self.env = env or shared_env()
+
+    async def prepare_report(self, report: Any, k: int, seen_product_ids: list[str]) -> dict:
+        """Label-free paper processing before the Miles agent attempts report repair.
+
+        No reference IDs or rewards are accepted or returned by this method.
+        """
+        try:
+            if isinstance(report, str):
+                report = json.loads(report)
+            if not isinstance(report, dict):
+                raise ValueError("the final answer must be a JSON object")
+            if isinstance(seen_product_ids, set | frozenset):
+                raise ValueError("seen IDs must preserve discovery order")
+            processed = prepare_report("", report, list(seen_product_ids), [], k, self.env.catalog)
+        except (TypeError, ValueError) as error:
+            return {"valid": False, "errors": [str(error)], "report": None}
+        errors = validation_errors(processed["results"], k, self.env.catalog, seen_product_ids)
+        compact = {
+            "report_explanation": processed["report_explanation"],
+            "results": [{"product_id": item["product_id"], "reasoning": item["reasoning"]}
+                        for item in processed["results"]],
+        }
+        return {"valid": not errors, "errors": errors, "report": compact}
 
     async def execute(self, category: str, tool_name: str, arguments: dict) -> dict:
         """Run one tool call. Returns {"ok", "content", "product_ids", "metrics"} as Miles expects."""

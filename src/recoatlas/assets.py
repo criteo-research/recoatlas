@@ -16,22 +16,22 @@ SOURCES = {
     "amazon-data": {
         "repo_type": "dataset",
         "repo_id": "iaouali/amazon-benchmark",
-        "revision": "ad5e6cb3138c8cf09b94ca8bbaadea00027b3980",
+        "revision": "2d4a9a53629e79b1521353416f33b1cd783c1e83",
     },
     "amazon-tools": {
         "repo_type": "model",
         "repo_id": "iaouali/amazon-tools",
-        "revision": "1510aab8c62c329e6670e659230429abb496afb4",
+        "revision": "4fc5b15b9351fe01af883bf32725c96073ac3b5b",
     },
     "hm-data": {
         "repo_type": "dataset",
         "repo_id": "iaouali/hm-benchmark",
-        "revision": "7ebe2e772916775198d770d00f2d3a6ff64b8800",
+        "revision": "191777239ffe4de0f7a4bbbef826a360aed84ca3",
     },
     "hm-tools": {
         "repo_type": "model",
         "repo_id": "iaouali/hm-tools",
-        "revision": "56e8a4a53df668d0d332c184665016d448362a3f",
+        "revision": "734f17af96bc63a391a7676ce291a23053ab21cb",
     },
 }
 
@@ -60,13 +60,13 @@ DATASETS = {
             },
             "comp_embeddings": {
                 "source": "amazon-tools",
-                "path": "Musical_Instruments/runs/shared-train-best-recipes-v1/embeddings/comp_embeddings_qwen.pt",
+                "path": "Musical_Instruments/embeddings/complementarity_embeddings_qwen.pt",
                 "size": 130206013,
                 "sha256": "848ec9f284ad9bfb0c236cfec90e1104e7b5e0c0e80a1b96b74ef315dfdba3eb",
             },
             "retrieval_model": {
                 "source": "amazon-tools",
-                "path": "Musical_Instruments/runs/shared-train-best-recipes-v1/models/recsys_model_qwen.pt",
+                "path": "Musical_Instruments/models/retrieval_model_qwen.pt",
                 "size": 242751975,
                 "sha256": "bce56bdce6684796832f1f0c20cf7b2acea2c1a6b7264798b704ff300d84c203",
             },
@@ -114,13 +114,13 @@ DATASETS = {
             },
             "comp_embeddings": {
                 "source": "hm-tools",
-                "path": "H_and_M/runs/shared-train-best-recipes-v1/embeddings/comp_embeddings_qwen.pt",
+                "path": "H_and_M/embeddings/complementarity_embeddings_qwen.pt",
                 "size": 862204045,
                 "sha256": "75fbbcd329df7cba5aa842f93aeb888f73202ae7efadec7d46616c0884beec55",
             },
             "retrieval_model": {
                 "source": "hm-tools",
-                "path": "H_and_M/runs/shared-train-best-recipes-v1/models/recsys_model_qwen.pt",
+                "path": "H_and_M/models/retrieval_model_qwen.pt",
                 "size": 242748315,
                 "sha256": "78615ce6995d01cbf4947fdde4944408cd1889db1f799245c717417107bcf645",
             },

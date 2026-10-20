@@ -5,7 +5,7 @@ from .env import Env, Episode, Settings
 
 
 def load(dataset: str = "hm-clothing", **settings) -> Env:
-    """Download (once) and load a dataset's tools and requests. Keyword arguments are `Settings` fields."""
+    """Load tools and requests; optional `splits` restricts downloads, other keywords are `Settings` fields."""
     return Env(dataset, **settings)
 
 

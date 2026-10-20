@@ -5,9 +5,20 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 dist/
+*.whl
 *.egg-info/
 trl-out/
 runs/
+packages/
+checkpoints/
+
+# The internal distributed trainer and cluster launchers are intentionally
+# excluded from the public environment release. The reusable
+# src/recoatlas/miles.py service adapter remains part of the package.
+training/miles/
+scripts/train_rl.sh
+scripts/eval_rl.sh
+scripts/rl_common.sh
 .env
 .env.*
 !.env.example

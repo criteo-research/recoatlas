@@ -153,10 +153,8 @@ RECOATLAS_DEVICE=cuda uv run recoatlas-openenv --port 8000
 - **`examples/miles_agent.py` needs a Miles checkout containing `examples/recoatlas/`** (`--miles
   PATH`). That example is not in upstream Miles.
 
-## Before making the repo public
+## Miles integration
 
-- **There is no LICENSE file.** `src/recoatlas/tools/` is copied from recoatlas-v1, which has no
-  license file either. Settle the license with the RecoAtlas authors and add a `LICENSE`.
 - **`miles.py` and `examples/miles_agent.py` depend on non-public code.** They only work with the
   RecoAtlas example in an internal Miles fork (`examples/recoatlas/`), which is not in upstream
   Miles. Before going public, either say so in the README or leave these two files out.
