@@ -10,6 +10,8 @@ Musical Instruments and H&M Clothing.
 - **How it works,** the design choices, and measured speed and memory:
   [docs/overview.md](docs/overview.md).
 - **Working on the code** (people or coding agents): [AGENTS.md](AGENTS.md).
+- **Rebuilding the frozen recommendation tools:**
+  [unified-tool-creation/](unified-tool-creation/README.md).
 
 The paper agent is a single [`Agent`](src/recoatlas/agent.py): the frozen optimized prompt,
 all three tools, six decision rounds, advisory near-duplicate checking, and original report

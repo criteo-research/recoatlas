@@ -1,0 +1,17 @@
+.env
+.venv/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+
+# Protected split files contain user identifiers and must never be published.
+private_splits/
+*_split_manifest.json
+
+# Generated caches, checkpoints, and local runs.
+runs/
+outputs/
+scratch/
+*.faiss
+*.parquet
+*.pt

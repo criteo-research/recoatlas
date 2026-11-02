@@ -1,0 +1,16 @@
+{
+  "profile": "amazon-electronics",
+  "domain": "amazon",
+  "category": "Electronics",
+  "launcher": "scripts/train_amazon_tools.py",
+  "release_repo": "iaouali/recoatlas",
+  "release_repo_type": "dataset",
+  "release_prefix": "amazon-electronics/tools",
+  "source": "McAuley-Lab/Amazon-Reviews-2023",
+  "source_revision": "2b6d039ed471f2ba5fd2acb718bf33b0a7e5598e",
+  "encoder_revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
+  "positive_policy": "review rating >= 4",
+  "retrieval_architecture": "Qwen3-Embedding-0.6B query LoRA",
+  "complementarity_architecture": "asymmetric 1024-512-256 MLP",
+  "catalog_filter": "Date First Available >= 2020"
+}

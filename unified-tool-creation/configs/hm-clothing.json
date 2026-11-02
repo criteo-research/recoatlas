@@ -1,0 +1,16 @@
+{
+  "profile": "hm-clothing",
+  "domain": "hm",
+  "category": "H_and_M",
+  "launcher": "scripts/train_hm_tools.py",
+  "release_repo": "iaouali/recoatlas",
+  "release_repo_type": "dataset",
+  "release_prefix": "hm-clothing/tools",
+  "source": "H&M Personalized Fashion Recommendations",
+  "encoder_revision": "97b0c614be4d77ee51c0cef4e5f07c00f9eb65b3",
+  "positive_policy": "every purchase is an implicit positive",
+  "retrieval_architecture": "Qwen3-Embedding-0.6B query LoRA",
+  "complementarity_architecture": "independent rank-32 residual anchor/complement heads",
+  "selected_complementarity_epoch": 2,
+  "catalog_filter": "nonempty name, description >= 15 characters, known product type"
+}
