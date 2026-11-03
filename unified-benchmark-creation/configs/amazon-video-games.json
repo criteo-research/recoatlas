@@ -1,0 +1,12 @@
+{
+  "profile": "amazon-video-games",
+  "domain": "amazon",
+  "category": "Video_Games",
+  "release_repo": "iaouali/recoatlas",
+  "release_prefix": "amazon-video-games/data",
+  "partitions": ["agent_hidden"],
+  "positive_rating": 4.0,
+  "window_days": 7,
+  "max_items": 7,
+  "deduplicate_sets_in_order": ["agent_hidden"]
+}

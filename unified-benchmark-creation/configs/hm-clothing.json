@@ -1,0 +1,17 @@
+{
+  "profile": "hm-clothing",
+  "domain": "hm",
+  "category": "H_and_M",
+  "release_repo": "iaouali/recoatlas",
+  "release_prefix": "hm-clothing/data",
+  "partitions": ["shared_train", "agent_dev", "agent_hidden"],
+  "window_days": 7,
+  "max_items": 7,
+  "deduplicate_sets_in_order": ["agent_hidden", "agent_dev", "shared_train"],
+  "selection_order": ["shared_train", "agent_dev", "agent_hidden"],
+  "targets": {
+    "shared_train": {"3": 5997, "4": 1803, "5": 637, "6": 287, "7": 295},
+    "agent_dev": {"3": 1401, "4": 385, "5": 134, "6": 51, "7": 57},
+    "agent_hidden": {"3": 1305, "4": 383, "5": 154, "6": 43, "7": 75}
+  }
+}

@@ -1,0 +1,34 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "recoatlas-benchmark-creation"
+version = "1.0.0"
+description = "Reproducible construction of RecoAtlas bundle-shopping queries"
+requires-python = ">=3.11"
+dependencies = [
+  "huggingface-hub>=0.27",
+  "numpy>=1.26",
+  "openai>=1.60",
+  "pandas>=2.2",
+  "pyarrow>=17",
+  "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.3", "ruff>=0.9"]
+
+[project.scripts]
+recoatlas-create-benchmark = "recoatlas_benchmark.cli:main"
+recoatlas-publish-benchmark = "recoatlas_benchmark.publish:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["recoatlas_benchmark"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

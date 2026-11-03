@@ -1,0 +1,12 @@
+{
+  "profile": "amazon-musical-instruments",
+  "domain": "amazon",
+  "category": "Musical_Instruments",
+  "release_repo": "iaouali/recoatlas",
+  "release_prefix": "amazon-musical-instruments/data",
+  "partitions": ["shared_train", "agent_dev", "agent_hidden"],
+  "positive_rating": 4.0,
+  "window_days": 7,
+  "max_items": 7,
+  "deduplicate_sets_in_order": ["agent_hidden", "agent_dev", "shared_train"]
+}
