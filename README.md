@@ -14,6 +14,8 @@ Musical Instruments and H&M Clothing.
   [unified-tool-creation/](unified-tool-creation/README.md).
 - **Rebuilding the behavioral reference sets and shopping requests:**
   [unified-benchmark-creation/](unified-benchmark-creation/README.md).
+- **Tutorial** (RecSys '26 CONSEQUENCES workshop): [slides (PDF)](docs/tutorial/recoatlas-tutorial-slides.pdf)
+  and the [video on YouTube](https://youtu.be/VgFCqGnPDwE).
 
 The paper agent is a single [`Agent`](src/recoatlas/agent.py): the frozen optimized prompt,
 all three tools, six decision rounds, advisory near-duplicate checking, and original report
